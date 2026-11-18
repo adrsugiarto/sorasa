@@ -171,6 +171,49 @@ class PhaseFourTransactionsTest extends TestCase
         $this->assertEquals('diproses', $sale->fresh()->status_order);
     }
 
+    public function test_sale_list_can_open_payment_modal_and_record_payment_directly(): void
+    {
+        $sale = Sale::create([
+            'nomor_order' => 'INV-20261118-PAYTEST',
+            'open_po_id' => $this->openPo->id,
+            'customer_id' => $this->customer->id,
+            'tanggal_pemesanan' => Carbon::today(),
+            'subtotal' => 150000,
+            'diskon' => 0,
+            'ongkos_kirim' => 0,
+            'total_tagihan' => 150000,
+            'status_pembayaran' => 'belum_bayar',
+            'status_order' => 'diproses',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(SaleList::class)
+            ->assertSee('Catat Bayar')
+            ->call('openPaymentModal', $sale->id)
+            ->assertSet('showPaymentModal', true)
+            ->assertSet('paymentSaleId', $sale->id)
+            ->assertSet('nominal_bayar', 150000.0)
+            ->set('nominal_bayar', 50000)
+            ->set('jenis_pembayaran', 'dp')
+            ->set('metode_pembayaran', 'Transfer BCA')
+            ->call('savePayment')
+            ->assertSet('showPaymentModal', false);
+
+        $this->assertEquals('dp', $sale->fresh()->status_pembayaran);
+        $this->assertEquals(100000.0, $sale->fresh()->remaining_balance);
+
+        // Now test pelunasan full payment directly from SaleList
+        Livewire::actingAs($this->user)
+            ->test(SaleList::class)
+            ->call('openPaymentModal', $sale->id)
+            ->assertSet('nominal_bayar', 100000.0)
+            ->call('fillFullPayment')
+            ->call('savePayment');
+
+        $this->assertEquals('lunas', $sale->fresh()->status_pembayaran);
+        $this->assertEquals(0.0, $sale->fresh()->remaining_balance);
+    }
+
     public function test_delivery_manager_can_update_status_and_generate_courier_format(): void
     {
         $sale = Sale::create([
@@ -200,7 +243,16 @@ class PhaseFourTransactionsTest extends TestCase
         Livewire::actingAs($this->user)
             ->test(DeliveryManager::class)
             ->call('updateStatus', $delivery->id, 'dalam_pengiriman')
-            ->assertHasNoErrors();
+            ->assertHasNoErrors()
+            ->call('filterByStatus', 'dalam_pengiriman')
+            ->assertSet('selectedStatus', 'dalam_pengiriman')
+            ->call('filterByStatus', 'dalam_pengiriman')
+            ->assertSet('selectedStatus', '')
+            ->set('search', 'Ibu Ratna')
+            ->set('selectedStatus', 'dalam_pengiriman')
+            ->call('resetFilters')
+            ->assertSet('search', '')
+            ->assertSet('selectedStatus', '');
 
         $this->assertEquals('dalam_pengiriman', $delivery->fresh()->status_pengantaran);
 

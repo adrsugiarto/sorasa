@@ -73,6 +73,39 @@ class DeliveryManager extends Component
     }
 
     /**
+     * Reset pagination when date filter changes.
+     */
+    public function updatingFilterDate(): void
+    {
+        $this->resetPage();
+    }
+
+    /**
+     * Toggle status filter from widget click.
+     */
+    public function filterByStatus(string $status): void
+    {
+        if ($this->selectedStatus === $status) {
+            $this->selectedStatus = '';
+        } else {
+            $this->selectedStatus = $status;
+        }
+
+        $this->resetPage();
+    }
+
+    /**
+     * Reset all active filters.
+     */
+    public function resetFilters(): void
+    {
+        $this->search = '';
+        $this->selectedStatus = '';
+        $this->filterDate = null;
+        $this->resetPage();
+    }
+
+    /**
      * Quick update delivery status from dropdown.
      */
     public function updateStatus(int $id, string $status): void
@@ -196,10 +229,25 @@ class DeliveryManager extends Component
                 $q->whereDate('tanggal_pengiriman', $this->filterDate);
             });
 
-        $deliveries = $query->orderBy('tanggal_pengiriman')->paginate(15);
+        $deliveries = $query->latest('tanggal_pengiriman')->latest('id')->paginate(15);
+
+        $rawCounts = Delivery::query()
+            ->selectRaw('status_pengantaran, count(*) as total')
+            ->groupBy('status_pengantaran')
+            ->pluck('total', 'status_pengantaran')
+            ->toArray();
+
+        $statusCounts = [
+            'total' => (int) array_sum($rawCounts),
+            'menunggu' => (int) ($rawCounts['menunggu'] ?? 0),
+            'dijadwalkan' => (int) ($rawCounts['dijadwalkan'] ?? 0),
+            'dalam_pengiriman' => (int) ($rawCounts['dalam_pengiriman'] ?? 0),
+            'terkirim' => (int) ($rawCounts['terkirim'] ?? 0),
+        ];
 
         return view('livewire.admin.delivery-manager', [
             'deliveries' => $deliveries,
+            'statusCounts' => $statusCounts,
         ]);
     }
 }

@@ -24,94 +24,110 @@
 
     <!-- TailAdmin Stores & Theme Setup -->
     <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.store('theme', {
-                init() {
-                    const savedTheme = localStorage.getItem('theme');
-                    this.theme = savedTheme === 'dark' ? 'dark' : 'light';
-                    this.updateTheme();
-                },
-                theme: 'light',
-                resolvedTheme: 'light',
-                set(value) {
-                    value = value === 'dark' ? 'dark' : 'light';
-                    this.theme = value;
-                    localStorage.setItem('theme', value);
-                    this.updateTheme();
-                    window.dispatchEvent(new CustomEvent('theme-changed', { detail: value }));
-                },
-                toggle() {
-                    this.set(this.resolvedTheme === 'dark' ? 'light' : 'dark');
-                },
-                updateTheme() {
-                    const html = document.documentElement;
-                    const isDark = this.theme === 'dark';
-                    if (isDark) {
-                        html.classList.add('dark');
-                    } else {
-                        html.classList.remove('dark');
-                    }
+        function initAdminStores() {
+            if (!window.Alpine) return;
 
-                    this.resolvedTheme = isDark ? 'dark' : 'light';
-                    html.setAttribute('data-color-scheme', this.resolvedTheme);
-                    html.dataset['theme'] = this.resolvedTheme;
-                    html.style.colorScheme = this.resolvedTheme;
-                }
-            });
-
-            Alpine.store('sidebar', {
-                isExpanded: true,
-                isMobileOpen: false,
-                isHovered: false,
-
-                init() {
-                    const savedState = localStorage.getItem('sidebarExpanded');
-                    if (window.innerWidth >= 1280) {
-                        this.isExpanded = savedState === null ? true : savedState === 'true';
-                    } else {
-                        this.isExpanded = false;
-                    }
-                    this.isMobileOpen = false;
-
-                    window.addEventListener('resize', () => {
-                        this.handleResize();
-                    });
-                },
-
-                handleResize() {
-                    if (window.innerWidth < 1280) {
-                        if (this.isMobileOpen) {
-                            this.isMobileOpen = false;
+            if (!Alpine.store('theme')) {
+                Alpine.store('theme', {
+                    init() {
+                        const savedTheme = localStorage.getItem('theme');
+                        this.theme = savedTheme === 'dark' ? 'dark' : 'light';
+                        this.updateTheme();
+                    },
+                    theme: 'light',
+                    resolvedTheme: 'light',
+                    set(value) {
+                        value = value === 'dark' ? 'dark' : 'light';
+                        this.theme = value;
+                        localStorage.setItem('theme', value);
+                        this.updateTheme();
+                        window.dispatchEvent(new CustomEvent('theme-changed', { detail: value }));
+                    },
+                    toggle() {
+                        this.set(this.resolvedTheme === 'dark' ? 'light' : 'dark');
+                    },
+                    updateTheme() {
+                        const html = document.documentElement;
+                        const isDark = this.theme === 'dark';
+                        if (isDark) {
+                            html.classList.add('dark');
+                        } else {
+                            html.classList.remove('dark');
                         }
-                    } else {
-                        this.isMobileOpen = false;
+
+                        this.resolvedTheme = isDark ? 'dark' : 'light';
+                        html.setAttribute('data-color-scheme', this.resolvedTheme);
+                        html.dataset['theme'] = this.resolvedTheme;
+                        html.style.colorScheme = this.resolvedTheme;
+                    }
+                });
+            }
+
+            if (!Alpine.store('sidebar')) {
+                Alpine.store('sidebar', {
+                    isExpanded: true,
+                    isMobileOpen: false,
+                    isHovered: false,
+
+                    init() {
                         const savedState = localStorage.getItem('sidebarExpanded');
-                        this.isExpanded = savedState === null ? true : savedState === 'true';
+                        if (window.innerWidth >= 1280) {
+                            this.isExpanded = savedState === null ? true : savedState === 'true';
+                        } else {
+                            this.isExpanded = false;
+                        }
+                        this.isMobileOpen = false;
+
+                        window.addEventListener('resize', () => {
+                            this.handleResize();
+                        });
+                    },
+
+                    handleResize() {
+                        if (window.innerWidth < 1280) {
+                            if (this.isMobileOpen) {
+                                this.isMobileOpen = false;
+                            }
+                        } else {
+                            this.isMobileOpen = false;
+                            const savedState = localStorage.getItem('sidebarExpanded');
+                            this.isExpanded = savedState === null ? true : savedState === 'true';
+                        }
+                    },
+
+                    toggleExpanded() {
+                        this.isExpanded = !this.isExpanded;
+                        this.isMobileOpen = false;
+                        if (window.innerWidth >= 1280) {
+                            localStorage.setItem('sidebarExpanded', this.isExpanded);
+                        }
+                    },
+
+                    toggleMobileOpen() {
+                        this.isMobileOpen = !this.isMobileOpen;
+                    },
+
+                    setMobileOpen(val) {
+                        this.isMobileOpen = val;
+                    },
+
+                    setHovered(val) {
+                        if (window.innerWidth >= 1280 && !this.isExpanded) {
+                            this.isHovered = val;
+                        }
                     }
-                },
+                });
+            }
+        }
 
-                toggleExpanded() {
-                    this.isExpanded = !this.isExpanded;
-                    this.isMobileOpen = false;
-                    if (window.innerWidth >= 1280) {
-                        localStorage.setItem('sidebarExpanded', this.isExpanded);
-                    }
-                },
-
-                toggleMobileOpen() {
-                    this.isMobileOpen = !this.isMobileOpen;
-                },
-
-                setMobileOpen(val) {
-                    this.isMobileOpen = val;
-                },
-
-                setHovered(val) {
-                    if (window.innerWidth >= 1280 && !this.isExpanded) {
-                        this.isHovered = val;
-                    }
-                }
-            });
+        if (window.Alpine) {
+            initAdminStores();
+        } else {
+            document.addEventListener('alpine:init', initAdminStores);
+        }
+        document.addEventListener('livewire:navigated', initAdminStores);
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.Alpine) initAdminStores();
         });
 
         // Apply dark mode immediately to prevent flash
@@ -127,24 +143,39 @@
             }
         })();
     </script>
+
+    <style>
+        @media print {
+            aside, header, nav, .no-print, .print\:hidden {
+                display: none !important;
+            }
+            body {
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                color: #0f172a !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
 </head>
 
-<body class="h-full font-sans antialiased text-slate-800 bg-slate-50 dark:bg-gray-950 dark:text-slate-200">
+<body class="h-full font-sans antialiased text-slate-800 bg-slate-50 dark:bg-gray-950 dark:text-slate-200 print:bg-white print:text-slate-900">
     <div
-        class="min-h-screen xl:flex sidebar-expanded"
+        class="min-h-screen xl:flex sidebar-expanded print:block print:min-h-0 print:p-0 print:m-0"
         x-data
-        :class="{ 'sidebar-expanded': $store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen }"
+        :class="{ 'sidebar-expanded': !$store.sidebar || $store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen }"
     >
         @include('layouts.backdrop')
         @include('layouts.sidebar')
 
-        <div class="flex-1 min-w-0 ml-0 ltr:xl:ml-[90px] rtl:xl:ml-0 rtl:xl:mr-[90px] [.sidebar-expanded_&]:ltr:xl:ml-[290px] [.sidebar-expanded_&]:rtl:xl:ml-0 [.sidebar-expanded_&]:rtl:xl:mr-[290px] transition-all duration-300 ease-in-out flex flex-col">
+        <div class="flex-1 min-w-0 ml-0 ltr:xl:ml-[90px] rtl:xl:ml-0 rtl:xl:mr-[90px] [.sidebar-expanded_&]:ltr:xl:ml-[290px] [.sidebar-expanded_&]:rtl:xl:ml-0 [.sidebar-expanded_&]:rtl:xl:mr-[290px] transition-all duration-300 ease-in-out flex flex-col print:ml-0 print:mr-0 print:p-0 print:m-0 print:block print:w-full">
             <!-- App Header -->
             @include('layouts.app-header')
 
             <!-- Global Toast / Alerts -->
             @if(session('success'))
-                <div x-data="{ show: true }" x-show="show" class="mx-4 sm:mx-6 lg:mx-8 mt-4 bg-emerald-50 border border-emerald-200 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300 text-xs font-semibold px-4 py-3 rounded-md flex items-center justify-between shadow-xs">
+                <div x-data="{ show: true }" x-show="show" class="no-print print:hidden mx-4 sm:mx-6 lg:mx-8 mt-4 bg-emerald-50 border border-emerald-200 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300 text-xs font-semibold px-4 py-3 rounded-md flex items-center justify-between shadow-xs">
                     <div class="flex items-center gap-2">
                         <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
@@ -158,7 +189,7 @@
             @endif
 
             @if(session('error'))
-                <div x-data="{ show: true }" x-show="show" class="mx-4 sm:mx-6 lg:mx-8 mt-4 bg-rose-50 border border-rose-200 text-rose-800 dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300 text-xs font-semibold px-4 py-3 rounded-md flex items-center justify-between shadow-xs">
+                <div x-data="{ show: true }" x-show="show" class="no-print print:hidden mx-4 sm:mx-6 lg:mx-8 mt-4 bg-rose-50 border border-rose-200 text-rose-800 dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300 text-xs font-semibold px-4 py-3 rounded-md flex items-center justify-between shadow-xs">
                     <div class="flex items-center gap-2">
                         <svg class="w-4 h-4 text-rose-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
@@ -172,7 +203,7 @@
             @endif
 
             <!-- Page Main Content Slot -->
-            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 print:p-0 print:m-0 print:overflow-visible">
                 {{ $slot }}
             </main>
         </div>

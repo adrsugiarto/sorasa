@@ -6,15 +6,19 @@ use App\Models\OpenPo;
 use App\Models\Sale;
 use App\Models\Setting;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 #[Layout('layouts.admin')]
 #[Title('Daftar Penjualan — SORASA')]
 class SaleList extends Component
 {
+    use WithFileUploads;
     use WithPagination;
 
     public string $search = '';
@@ -39,6 +43,40 @@ class SaleList extends Component
      * @var array<int, array{id: string, bank_name: string, account_number: string, account_name: string, is_primary: bool}>
      */
     public array $bankAccounts = [];
+
+    // Catat Pembayaran Masuk Modal
+    public bool $showPaymentModal = false;
+
+    public ?int $paymentSaleId = null;
+
+    public ?Sale $paymentSale = null;
+
+    public string $tanggal_bayar = '';
+
+    public string $jenis_pembayaran = 'pelunasan';
+
+    public $nominal_bayar = '';
+
+    public string $metode_pembayaran = 'Transfer BCA';
+
+    public $bukti_bayar = null;
+
+    public string $catatan = '';
+
+    /**
+     * @var array<int, string>
+     */
+    public array $paymentMethods = [
+        'Transfer BCA',
+        'Transfer Mandiri',
+        'Transfer BRI',
+        'Transfer BNI',
+        'QRIS',
+        'Cash / Tunai',
+        'GoPay',
+        'ShopeePay',
+        'Lainnya',
+    ];
 
     /**
      * Reset pagination when search query changes.
@@ -81,6 +119,101 @@ class SaleList extends Component
     {
         $this->showReceiptModal = false;
         $this->selectedSale = null;
+    }
+
+    /**
+     * Open record payment modal for a specific sale.
+     */
+    public function openPaymentModal(int $saleId): void
+    {
+        $this->resetValidation();
+        $sale = Sale::query()->with(['customer', 'payments'])->findOrFail($saleId);
+
+        $this->paymentSaleId = $sale->id;
+        $this->paymentSale = $sale;
+        $this->tanggal_bayar = Carbon::today()->format('Y-m-d');
+        $this->nominal_bayar = (float) $sale->remaining_balance;
+        $this->jenis_pembayaran = $sale->status_pembayaran === 'dp' ? 'pelunasan' : ($this->nominal_bayar >= $sale->total_tagihan ? 'pelunasan' : 'dp');
+        $this->metode_pembayaran = 'Transfer BCA';
+        $this->bukti_bayar = null;
+        $this->catatan = '';
+
+        $this->showPaymentModal = true;
+    }
+
+    /**
+     * Set nominal to pay full remaining balance.
+     */
+    public function fillFullPayment(): void
+    {
+        if ($this->paymentSale) {
+            $this->nominal_bayar = (float) $this->paymentSale->remaining_balance;
+            $this->jenis_pembayaran = 'pelunasan';
+        }
+    }
+
+    /**
+     * Close payment modal.
+     */
+    public function closePaymentModal(): void
+    {
+        $this->showPaymentModal = false;
+        $this->paymentSaleId = null;
+        $this->paymentSale = null;
+        $this->bukti_bayar = null;
+        $this->resetValidation();
+    }
+
+    /**
+     * Save payment and auto-update sale payment status.
+     */
+    public function savePayment(): void
+    {
+        $this->validate([
+            'paymentSaleId' => ['required', 'exists:sales,id'],
+            'tanggal_bayar' => ['required', 'date'],
+            'jenis_pembayaran' => ['required', 'in:dp,cicilan,pelunasan'],
+            'nominal_bayar' => ['required', 'numeric', 'min:1'],
+            'metode_pembayaran' => ['required', 'string', 'max:100'],
+            'bukti_bayar' => ['nullable', 'image', 'max:3072'],
+            'catatan' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        DB::transaction(function () {
+            $sale = Sale::query()->with('payments')->findOrFail($this->paymentSaleId);
+
+            $proofPath = null;
+            if ($this->bukti_bayar) {
+                $proofPath = $this->bukti_bayar->store('payments', 'public');
+            }
+
+            // Create Payment record
+            $sale->payments()->create([
+                'tanggal_bayar' => $this->tanggal_bayar,
+                'jenis_pembayaran' => $this->jenis_pembayaran,
+                'nominal_bayar' => (float) $this->nominal_bayar,
+                'metode_pembayaran' => $this->metode_pembayaran,
+                'bukti_bayar' => $proofPath,
+                'status_verifikasi' => 'verified',
+                'catatan' => $this->catatan,
+            ]);
+
+            // Re-evaluate Sale Payment Status
+            $newTotalPaid = (float) $sale->payments()->where('status_verifikasi', 'verified')->sum('nominal_bayar');
+
+            if ($newTotalPaid >= (float) $sale->total_tagihan) {
+                $sale->status_pembayaran = 'lunas';
+            } elseif ($newTotalPaid > 0) {
+                $sale->status_pembayaran = 'dp';
+            } else {
+                $sale->status_pembayaran = 'belum_bayar';
+            }
+
+            $sale->save();
+        });
+
+        session()->flash('success', 'Pembayaran berhasil dicatat!');
+        $this->closePaymentModal();
     }
 
     /**

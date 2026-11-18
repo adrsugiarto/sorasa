@@ -2,16 +2,16 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-            <h1 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Manajemen Batch Open PO</h1>
-            <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Atur jadwal periode pemesanan, tanggal pengiriman, dan pantau rekap produksi dapur</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Manajemen Batch Open PO</h1>
+            <p class="text-sm text-slate-500 dark:text-gray-400 mt-1">Atur jadwal periode pemesanan, tanggal pengiriman, dan pantau rekap produksi dapur</p>
         </div>
         <div>
             <button
                 type="button"
                 wire:click="openCreateModal"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md shadow-xs transition-all active:scale-95 cursor-pointer"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"
             >
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 <span>+ Buat Batch Open PO Baru</span>
@@ -22,56 +22,56 @@
     <!-- Batches List -->
     <x-card noPadding="true">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 dark:bg-gray-800/80 text-slate-500 dark:text-gray-400 border-b border-slate-200 dark:border-gray-800 uppercase font-semibold text-[11px] tracking-wider">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 dark:bg-gray-800/80 text-slate-600 dark:text-gray-400 border-b border-slate-200 dark:border-gray-800 uppercase font-bold text-xs tracking-wider">
                     <tr>
-                        <th class="px-3.5 py-2.5">Kode & Nama Batch</th>
-                        <th class="px-3.5 py-2.5">Periode Pemesanan</th>
-                        <th class="px-3.5 py-2.5">Jadwal Kirim</th>
-                        <th class="px-3.5 py-2.5 text-center">Order Masuk</th>
-                        <th class="px-3.5 py-2.5 text-right">Omzet Batch</th>
-                        <th class="px-3.5 py-2.5">Status Batch</th>
-                        <th class="px-3.5 py-2.5 text-right">Aksi</th>
+                        <th class="px-4 py-3.5">Kode & Nama Batch</th>
+                        <th class="px-4 py-3.5">Periode Pemesanan</th>
+                        <th class="px-4 py-3.5">Jadwal Kirim</th>
+                        <th class="px-4 py-3.5 text-center">Order Masuk</th>
+                        <th class="px-4 py-3.5 text-right">Omzet Batch</th>
+                        <th class="px-4 py-3.5">Status Batch</th>
+                        <th class="px-4 py-3.5 text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-gray-800 text-slate-700 dark:text-gray-300 text-[13px] leading-5">
+                <tbody class="divide-y divide-slate-100 dark:divide-gray-800 text-slate-700 dark:text-gray-300 text-sm leading-6">
                     @forelse($batches as $batch)
                         <tr class="hover:bg-slate-50/60 dark:hover:bg-gray-800/40 transition-colors">
-                            <td class="px-3.5 py-2.5 font-medium text-slate-900 dark:text-white">
+                            <td class="px-4 py-3.5 font-medium text-slate-900 dark:text-white">
                                 <div class="flex items-center gap-2">
                                     <span class="font-semibold text-slate-900 dark:text-white">{{ $batch->nama_po }}</span>
                                     @if($batch->status === 'open')
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/40 dark:text-blue-300">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/40 dark:text-blue-300">
                                             AKTIF
                                         </span>
                                     @endif
                                 </div>
                                 <span class="text-xs font-mono text-slate-400 dark:text-gray-500 font-medium tabular-nums">{{ $batch->kode_po }}</span>
                             </td>
-                            <td class="px-3.5 py-2.5 text-slate-600 dark:text-gray-400">
+                            <td class="px-4 py-3.5 text-slate-600 dark:text-gray-400">
                                 <div class="font-medium text-slate-800 dark:text-gray-200 tabular-nums">{{ $batch->tanggal_buka->format('d M') }} — {{ $batch->tanggal_tutup->format('d M Y') }}</div>
-                                <span class="text-[10px] text-slate-400 dark:text-gray-500">Tutup H-{{ max(0, $batch->tanggal_buka->diffInDays($batch->tanggal_tutup)) }} sebelum kirim</span>
+                                <span class="text-xs text-slate-400 dark:text-gray-500">Tutup H-{{ max(0, $batch->tanggal_buka->diffInDays($batch->tanggal_tutup)) }} sebelum kirim</span>
                             </td>
-                            <td class="px-3.5 py-2.5">
-                                <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-xs font-medium tabular-nums text-slate-700 dark:text-gray-300">
-                                    <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <td class="px-4 py-3.5">
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-xs sm:text-sm font-medium tabular-nums text-slate-700 dark:text-gray-300">
+                                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                     <span>{{ $batch->tanggal_pengiriman->format('d M Y') }}</span>
                                 </div>
                             </td>
-                            <td class="px-3.5 py-2.5 text-center">
-                                <span class="font-semibold text-slate-900 dark:text-white tabular-nums">{{ $batch->sales_count }}</span>
-                                <span class="text-[11px] text-slate-400 dark:text-gray-500 block">pesanan</span>
+                            <td class="px-4 py-3.5 text-center">
+                                <span class="font-bold text-slate-900 dark:text-white tabular-nums text-sm sm:text-base">{{ $batch->sales_count }}</span>
+                                <span class="text-xs text-slate-400 dark:text-gray-500 block">pesanan</span>
                             </td>
-                            <td class="px-3.5 py-2.5 text-right font-semibold text-slate-900 dark:text-white tabular-nums">
+                            <td class="px-4 py-3.5 text-right font-bold text-slate-900 dark:text-white tabular-nums text-sm sm:text-base">
                                 <x-money :value="$batch->total_omzet ?? 0" />
                             </td>
-                            <td class="px-3.5 py-2.5">
+                            <td class="px-4 py-3.5">
                                 <select
                                     wire:change="updateStatus({{ $batch->id }}, $event.target.value)"
                                     @class([
-                                        'text-xs font-medium rounded-md px-2 py-1 border transition-colors cursor-pointer bg-white dark:bg-gray-800',
+                                        'text-xs sm:text-sm font-semibold rounded-lg px-2.5 py-1.5 border transition-colors cursor-pointer bg-white dark:bg-gray-800',
                                         'text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800 bg-blue-50/50' => $batch->status === 'open',
                                         'text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 bg-emerald-50/50' => $batch->status === 'completed',
                                         'text-slate-600 dark:text-gray-400 border-slate-200 dark:border-gray-700' => in_array($batch->status, ['draft', 'closed']),
@@ -83,15 +83,15 @@
                                     <option value="completed" @selected($batch->status === 'completed')>COMPLETED (SELESAI)</option>
                                 </select>
                             </td>
-                            <td class="px-3.5 py-2.5 text-right">
-                                <div class="inline-flex items-center gap-1">
+                            <td class="px-4 py-3.5 text-right">
+                                <div class="inline-flex items-center gap-1.5">
                                     <button
                                         type="button"
                                         wire:click="showRecap({{ $batch->id }})"
-                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-50 dark:bg-gray-800 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-700 border border-slate-200 dark:border-gray-700 font-medium text-xs transition-colors cursor-pointer"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-gray-800 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-750 border border-slate-200 dark:border-gray-700 font-semibold text-xs transition-colors cursor-pointer"
                                         title="Lihat rekap produksi masakan dapur"
                                     >
-                                        <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                         </svg>
                                         <span>Rekap Dapur</span>
@@ -100,10 +100,10 @@
                                     <button
                                         type="button"
                                         wire:click="openEditModal({{ $batch->id }})"
-                                        class="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                                        class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                                         title="Edit Batch"
                                     >
-                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
@@ -113,10 +113,10 @@
                                             type="button"
                                             wire:click="delete({{ $batch->id }})"
                                             wire:confirm="Yakin ingin menghapus batch Open PO ini?"
-                                            class="p-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                                            class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                                             title="Hapus Batch"
                                         >
-                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>

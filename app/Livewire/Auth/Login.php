@@ -61,7 +61,7 @@ class Login extends Component
 
         session()->regenerate();
 
-        $this->redirectIntended(route('admin.dashboard'), navigate: true);
+        $this->redirectIntended(route('admin.dashboard'));
     }
 
     /**

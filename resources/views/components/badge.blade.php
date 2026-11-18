@@ -25,7 +25,7 @@ $dotClasses = match($variant) {
 };
 @endphp
 
-<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium border ' . $classes]) }}>
+<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold tracking-wide border ' . $classes]) }}>
     @if($dot)
         <span class="w-1.5 h-1.5 rounded-full {{ $dotClasses }}"></span>
     @endif
