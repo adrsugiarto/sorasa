@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Livewire\Admin\DeliveryManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,6 +46,14 @@ class Delivery extends Model
         return [
             'tanggal_pengiriman' => 'date',
         ];
+    }
+
+    /**
+     * Get the formatted courier text for WhatsApp.
+     */
+    public function getFormatKurirAttribute(): string
+    {
+        return DeliveryManager::formatCourierText($this);
     }
 
     /**

@@ -1,52 +1,406 @@
 <div class="space-y-6">
+    <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-xl font-bold tracking-tight text-slate-900">Database Pelanggan & Riwayat</h1>
-            <p class="text-xs text-slate-500 mt-1">Daftar customer setia, total nilai belanja, dan link cepat chat WhatsApp</p>
+            <h1 class="text-xl font-bold tracking-tight text-slate-900">Database Pelanggan & Riwayat Belanja</h1>
+            <p class="text-xs text-slate-500 mt-1">Daftar pelanggan, akumulasi nilai belanja, riwayat order, dan chat WhatsApp cepat</p>
+        </div>
+        <div>
+            <button
+                type="button"
+                wire:click="openCreateModal"
+                class="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer"
+            >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                <span>Tambah Pelanggan Baru</span>
+            </button>
         </div>
     </div>
 
+    <!-- Filters & Search Toolbar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
+        <div class="relative flex-1 max-w-md">
+            <input
+                wire:model.live.debounce.300ms="search"
+                type="text"
+                placeholder="Cari nama pelanggan, nomor WhatsApp, atau alamat..."
+                class="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-slate-800 placeholder-slate-400"
+            >
+            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <select
+                wire:model.live="selectedCategory"
+                class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-slate-700 font-medium"
+            >
+                <option value="">Semua Kategori</option>
+                @foreach($customerCategories as $cat)
+                    <option value="{{ $cat }}">{{ $cat }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
+    <!-- Customers Table -->
     <x-card noPadding="true">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase font-semibold">
                     <tr>
-                        <th class="px-5 py-3.5">Nama Customer</th>
-                        <th class="px-5 py-3.5">No. WhatsApp</th>
+                        <th class="px-5 py-3.5">Nama Pelanggan</th>
+                        <th class="px-5 py-3.5">Kontak WhatsApp</th>
                         <th class="px-5 py-3.5">Kategori</th>
                         <th class="px-5 py-3.5 text-center">Total Order</th>
                         <th class="px-5 py-3.5 text-right">Total Belanja</th>
-                        <th class="px-5 py-3.5">Alamat Lengkap</th>
+                        <th class="px-5 py-3.5">Terakhir Pesan</th>
+                        <th class="px-5 py-3.5 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
                     @forelse($customers as $c)
                         <tr class="hover:bg-slate-50/60 transition-colors">
-                            <td class="px-5 py-3.5 font-bold text-slate-900">{{ $c->nama }}</td>
-                            <td class="px-5 py-3.5">
-                                <a href="{{ $c->wa_link }}" target="_blank" class="inline-flex items-center gap-1.5 text-emerald-700 hover:text-emerald-900 font-mono font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
+                            <td class="px-5 py-4 font-bold text-slate-900">
+                                <div>{{ $c->nama }}</div>
+                                <span class="text-[11px] text-slate-400 font-normal line-clamp-1 max-w-xs">{{ $c->alamat }}</span>
+                            </td>
+                            <td class="px-5 py-4">
+                                <a
+                                    href="{{ $c->wa_link }}"
+                                    target="_blank"
+                                    class="inline-flex items-center gap-1.5 text-emerald-800 hover:text-emerald-950 font-mono font-semibold bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/70 hover:bg-emerald-100 transition-colors"
+                                    title="Klik untuk membuka chat WhatsApp"
+                                >
+                                    <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.072-2.125-.521-1.828-.759-2.999-2.618-3.09-2.738-.088-.121-.734-.978-.734-1.865 0-.887.464-1.324.63-1.503.167-.179.364-.224.486-.224.123 0 .243.001.35.006.111.006.26-.042.408.312.149.364.512 1.25.557 1.341.045.091.076.197.015.318-.06.121-.09.197-.181.303-.09.106-.19.237-.272.318-.09.091-.184.19-.08.369.106.182.47 1.05 1.008 1.53.693.618 1.277.81 1.458.899.182.091.288.076.395-.045.106-.121.454-.53.576-.712.121-.182.242-.152.409-.091.167.061 1.06.5 1.242.591.182.091.303.136.35.212.045.076.045.439-.099.844z"/></svg>
                                     <span>{{ $c->no_whatsapp }}</span>
-                                    <svg class="w-3 h-3 text-emerald-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.072-2.125-.521-1.828-.759-2.999-2.618-3.09-2.738-.088-.121-.734-.978-.734-1.865 0-.887.464-1.324.63-1.503.167-.179.364-.224.486-.224.123 0 .243.001.35.006.111.006.26-.042.408.312.149.364.512 1.25.557 1.341.045.091.076.197.015.318-.06.121-.09.197-.181.303-.09.106-.19.237-.272.318-.09.091-.184.19-.08.369.106.182.47 1.05 1.008 1.53.693.618 1.277.81 1.458.899.182.091.288.076.395-.045.106-.121.454-.53.576-.712.121-.182.242-.152.409-.091.167.061 1.06.5 1.242.591.182.091.303.136.35.212.045.076.045.439-.099.844z"/></svg>
                                 </a>
                             </td>
-                            <td class="px-5 py-3.5">
-                                <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700">
-                                    {{ $c->kategori_pelanggan }}
-                                </span>
+                            <td class="px-5 py-4">
+                                @if($c->kategori_pelanggan === 'VIP')
+                                    <x-badge variant="amber" :dot="true">VIP</x-badge>
+                                @elseif($c->kategori_pelanggan === 'Reseller')
+                                    <x-badge variant="indigo" :dot="true">Reseller</x-badge>
+                                @elseif($c->kategori_pelanggan === 'Keluarga/Teman')
+                                    <x-badge variant="sky">Keluarga/Teman</x-badge>
+                                @else
+                                    <x-badge variant="slate">Reguler</x-badge>
+                                @endif
                             </td>
-                            <td class="px-5 py-3.5 text-center font-bold text-slate-900">{{ $c->sales->count() }}</td>
-                            <td class="px-5 py-3.5 text-right font-bold text-slate-900">
-                                <x-money :value="$c->sales->sum('total_tagihan')" />
+                            <td class="px-5 py-4 text-center font-bold text-sm text-slate-900">
+                                {{ $c->sales_count }}
                             </td>
-                            <td class="px-5 py-3.5 text-slate-500 max-w-xs truncate">{{ $c->alamat }}</td>
+                            <td class="px-5 py-4 text-right font-extrabold text-slate-900">
+                                <x-money :value="$c->total_belanja ?? 0" />
+                            </td>
+                            <td class="px-5 py-4 text-slate-600">
+                                {{ $c->last_order_at ? \Illuminate\Support\Carbon::parse($c->last_order_at)->format('d M Y') : '-' }}
+                            </td>
+                            <td class="px-5 py-4 text-right">
+                                <div class="inline-flex items-center gap-1.5">
+                                    <button
+                                        type="button"
+                                        wire:click="showCustomerDetail({{ $c->id }})"
+                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+                                        title="Lihat riwayat order dan belanja"
+                                    >
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>Riwayat</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        wire:click="openEditModal({{ $c->id }})"
+                                        class="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+                                        title="Edit Pelanggan"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+
+                                    @if($c->sales_count === 0)
+                                        <button
+                                            type="button"
+                                            wire:click="delete({{ $c->id }})"
+                                            wire:confirm="Yakin ingin menghapus pelanggan '{{ $c->nama }}'?"
+                                            class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                                            title="Hapus Pelanggan"
+                                        >
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    @endif
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-8 text-center text-slate-400">Belum ada data customer.</td>
+                            <td colspan="7" class="px-5 py-12 text-center text-slate-400">
+                                Tidak ada data pelanggan yang cocok dengan pencarian.
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </x-card>
+
+    <!-- Pagination -->
+    <div>
+        {{ $customers->links() }}
+    </div>
+
+    <!-- Modal Form Tambah / Edit Customer -->
+    @if($showModal)
+        <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
+            <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity" wire:click="closeModal"></div>
+
+            <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden transform transition-all z-10">
+                <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <h3 class="text-base font-bold text-slate-900">
+                        {{ $isEditing ? 'Edit Data Pelanggan' : 'Tambah Pelanggan Baru' }}
+                    </h3>
+                    <button type="button" wire:click="closeModal" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form wire:submit="save">
+                    <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                                Nama Lengkap Pelanggan *
+                            </label>
+                            <input
+                                wire:model="nama"
+                                type="text"
+                                required
+                                placeholder="Contoh: Maya Kusuma"
+                                class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-slate-900 font-semibold"
+                            >
+                            @error('nama') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                                    Nomor WhatsApp *
+                                </label>
+                                <input
+                                    wire:model="no_whatsapp"
+                                    type="text"
+                                    required
+                                    placeholder="081234567890"
+                                    class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 font-mono font-medium text-slate-900"
+                                >
+                                @error('no_whatsapp') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                                    Kategori Pelanggan *
+                                </label>
+                                <select
+                                    wire:model="kategori_pelanggan"
+                                    required
+                                    class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-slate-900 font-semibold"
+                                >
+                                    @foreach($customerCategories as $cat)
+                                        <option value="{{ $cat }}">{{ $cat }}</option>
+                                    @endforeach
+                                </select>
+                                @error('kategori_pelanggan') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                                Alamat Lengkap Pengiriman *
+                            </label>
+                            <textarea
+                                wire:model="alamat"
+                                rows="3"
+                                required
+                                placeholder="Jalan, nomor rumah, perumahan/komplek, kelurahan, kecamatan, kota..."
+                                class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-slate-900"
+                            ></textarea>
+                            @error('alamat') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                                Catatan Khusus Pelanggan
+                            </label>
+                            <textarea
+                                wire:model="catatan"
+                                rows="2"
+                                placeholder="Contoh: Suka sambal ekstra, arisan tiap minggu ke-3..."
+                                class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-slate-900"
+                            ></textarea>
+                            @error('catatan') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2.5">
+                        <button
+                            type="button"
+                            wire:click="closeModal"
+                            class="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl"
+                        >
+                            Batal
+                        </button>
+                        <button
+                            type="submit"
+                            wire:loading.attr="disabled"
+                            class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-xl shadow-xs disabled:opacity-50"
+                        >
+                            <span wire:loading.remove>{{ $isEditing ? 'Simpan Perubahan' : 'Simpan Pelanggan' }}</span>
+                            <span wire:loading>Menyimpan...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
+    <!-- Modal Riwayat Pesanan & Detail Pelanggan -->
+    @if($showDetailModal && $selectedCustomer)
+        <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity" wire:click="closeDetailModal"></div>
+
+            <div class="relative w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden transform transition-all z-10">
+                <div class="px-6 py-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-base font-bold text-slate-900">{{ $selectedCustomer->nama }}</h3>
+                            <x-badge variant="amber">{{ $selectedCustomer->kategori_pelanggan }}</x-badge>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-0.5">{{ $selectedCustomer->no_whatsapp }} • {{ $selectedCustomer->alamat }}</p>
+                    </div>
+                    <button type="button" wire:click="closeDetailModal" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+                    <!-- Metrics Summary -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center">
+                            <span class="text-[10px] font-semibold text-slate-400 uppercase">Total Pesanan</span>
+                            <div class="text-base font-bold text-slate-900 mt-0.5">
+                                {{ $selectedCustomer->sales->count() }} Kali Order
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center">
+                            <span class="text-[10px] font-semibold text-slate-400 uppercase">Akumulasi Belanja</span>
+                            <div class="text-base font-extrabold text-slate-900 mt-0.5">
+                                <x-money :value="$selectedCustomer->sales->sum('total_tagihan')" />
+                            </div>
+                        </div>
+                        <div class="p-3 bg-rose-50/60 rounded-xl border border-rose-200 text-center">
+                            <span class="text-[10px] font-semibold text-rose-700 uppercase">Sisa Piutang Pending</span>
+                            <div class="text-base font-extrabold text-rose-800 mt-0.5">
+                                @php
+                                    $custTotal = $selectedCustomer->sales->sum('total_tagihan');
+                                    $custPaid = $selectedCustomer->sales->flatMap->payments->where('status_verifikasi', 'verified')->sum('nominal_bayar');
+                                    $custPiutang = max(0, $custTotal - $custPaid);
+                                @endphp
+                                <x-money :value="$custPiutang" />
+                            </div>
+                        </div>
+                    </div>
+
+                    @if($selectedCustomer->catatan)
+                        <div class="p-3 rounded-xl bg-amber-50/60 border border-amber-200 text-xs text-amber-900">
+                            <span class="font-bold">Catatan Khusus:</span> {{ $selectedCustomer->catatan }}
+                        </div>
+                    @endif
+
+                    <!-- Orders History Table -->
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">Riwayat Transaksi Pesanan:</h4>
+                        <div class="border border-slate-200 rounded-xl overflow-hidden">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-2.5">No. Order & Batch</th>
+                                        <th class="px-4 py-2.5">Tanggal</th>
+                                        <th class="px-4 py-2.5">Rincian Menu Dipesan</th>
+                                        <th class="px-4 py-2.5 text-right">Total Tagihan</th>
+                                        <th class="px-4 py-2.5">Status Bayar</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700">
+                                    @forelse($selectedCustomer->sales as $sale)
+                                        <tr class="hover:bg-slate-50/60">
+                                            <td class="px-4 py-3 font-semibold text-slate-900">
+                                                <div class="font-mono">{{ $sale->nomor_order }}</div>
+                                                <span class="text-[11px] text-slate-400 font-normal">{{ $sale->openPo->nama_po ?? '-' }}</span>
+                                            </td>
+                                            <td class="px-4 py-3 text-slate-600">
+                                                {{ $sale->tanggal_pemesanan->format('d M Y') }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                <ul class="space-y-0.5">
+                                                    @foreach($sale->items as $item)
+                                                        <li class="text-[11px]">
+                                                            <span class="font-bold text-slate-900">{{ $item->jumlah_paket }}x</span> {{ $item->nama_produk_snapshot }}
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </td>
+                                            <td class="px-4 py-3 text-right font-bold text-slate-900">
+                                                <x-money :value="$sale->total_tagihan" />
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                @if($sale->status_pembayaran === 'lunas')
+                                                    <x-badge variant="emerald">LUNAS</x-badge>
+                                                @elseif($sale->status_pembayaran === 'dp')
+                                                    <x-badge variant="amber">DP (Sisa <x-money :value="$sale->remaining_balance" />)</x-badge>
+                                                @else
+                                                    <x-badge variant="rose">BELUM BAYAR</x-badge>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="px-4 py-8 text-center text-slate-400">Belum ada riwayat pesanan.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <a
+                        href="{{ $selectedCustomer->wa_link }}"
+                        target="_blank"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-2xs"
+                    >
+                        <span>Chat Pelanggan di WhatsApp</span>
+                    </a>
+                    <button
+                        type="button"
+                        wire:click="closeDetailModal"
+                        class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg"
+                    >
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
