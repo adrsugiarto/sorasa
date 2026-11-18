@@ -55,7 +55,7 @@
             </div>
             <div class="hidden [.sidebar-expanded_&]:block transition-opacity duration-200">
                 <span class="text-sm font-bold tracking-tight text-slate-900 dark:text-white">SORASA</span>
-                <span class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Kitchen & Pastry POS</span>
+                <span class="block text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Point of Sale (POS)</span>
             </div>
         </a>
     </div>

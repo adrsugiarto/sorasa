@@ -6,7 +6,7 @@
     'noPadding' => false,
 ])
 
-<div {{ $attributes->merge(['class' => 'bg-white dark:bg-gray-850 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xs overflow-hidden']) }}>
+<div {{ $attributes->merge(['class' => 'bg-white dark:bg-gray-900 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xs overflow-hidden']) }}>
     @if($title || $action)
         <div class="px-4 py-3 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between gap-4">
             <div>

@@ -1,15 +1,15 @@
-<div class="space-y-6">
+<div class="space-y-5">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-            <h1 class="text-xl font-bold tracking-tight text-slate-900">Daftar Pesanan Penjualan</h1>
-            <p class="text-xs text-slate-500 mt-1">Seluruh riwayat transaksi order, cetak nota struk, dan pantau status pemrosesan</p>
+            <h1 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Daftar Pesanan Penjualan</h1>
+            <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Seluruh riwayat transaksi order, cetak nota struk, dan pantau status pemrosesan</p>
         </div>
         <a
             href="{{ route('admin.sales.pos') }}"
-            class="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md shadow-xs transition-all active:scale-95 cursor-pointer"
         >
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             <span>+ Order Baru (Kasir POS)</span>
@@ -17,23 +17,23 @@
     </div>
 
     <!-- Filters & Search Toolbar -->
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white dark:bg-gray-900 p-3 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xs">
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 flex-1">
             <div class="relative">
                 <input
                     wire:model.live.debounce.300ms="search"
                     type="text"
                     placeholder="Cari nomor INV atau nama..."
-                    class="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-slate-800 placeholder-slate-400"
+                    class="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-800 dark:text-white placeholder-slate-400 font-medium"
                 >
-                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
 
             <select
                 wire:model.live="selectedOpenPoId"
-                class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-slate-700 font-medium"
+                class="px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-700 dark:text-gray-300 font-medium"
             >
                 <option value="">Semua Batch PO</option>
                 @foreach($openPos as $po)
@@ -43,7 +43,7 @@
 
             <select
                 wire:model.live="selectedStatusPembayaran"
-                class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-slate-700 font-medium"
+                class="px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-700 dark:text-gray-300 font-medium"
             >
                 <option value="">Semua Status Bayar</option>
                 <option value="lunas">Lunas</option>
@@ -53,7 +53,7 @@
 
             <select
                 wire:model.live="selectedStatusOrder"
-                class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-slate-700 font-medium"
+                class="px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-700 dark:text-gray-300 font-medium"
             >
                 <option value="">Semua Status Order</option>
                 <option value="menunggu_konfirmasi">Menunggu Konfirmasi</option>
@@ -64,9 +64,9 @@
             </select>
         </div>
 
-        <div class="px-3.5 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-right shrink-0">
+        <div class="px-3 py-1.5 rounded-md bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-right shrink-0">
             <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Total Omzet Terfilter:</span>
-            <span class="text-sm font-extrabold text-slate-900">
+            <span class="text-sm font-bold text-slate-900 dark:text-white tabular-nums">
                 <x-money :value="$totalOmzetFiltered" />
             </span>
         </div>
@@ -76,64 +76,64 @@
     <x-card noPadding="true">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase font-semibold">
+                <thead class="bg-slate-50 dark:bg-gray-800/80 text-slate-500 dark:text-gray-400 border-b border-slate-200 dark:border-gray-800 uppercase font-semibold text-[11px] tracking-wider">
                     <tr>
-                        <th class="px-5 py-3.5">Faktur Order</th>
-                        <th class="px-5 py-3.5">Pelanggan</th>
-                        <th class="px-5 py-3.5">Batch PO</th>
-                        <th class="px-5 py-3.5">Item Pesanan</th>
-                        <th class="px-5 py-3.5 text-right">Total Tagihan</th>
-                        <th class="px-5 py-3.5">Status Bayar</th>
-                        <th class="px-5 py-3.5">Status Order</th>
-                        <th class="px-5 py-3.5 text-right">Aksi</th>
+                        <th class="px-3.5 py-2.5">Faktur Order</th>
+                        <th class="px-3.5 py-2.5">Pelanggan</th>
+                        <th class="px-3.5 py-2.5">Batch PO</th>
+                        <th class="px-3.5 py-2.5">Item Pesanan</th>
+                        <th class="px-3.5 py-2.5 text-right">Total Tagihan</th>
+                        <th class="px-3.5 py-2.5">Status Bayar</th>
+                        <th class="px-3.5 py-2.5">Status Order</th>
+                        <th class="px-3.5 py-2.5 text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 text-slate-700">
+                <tbody class="divide-y divide-slate-100 dark:divide-gray-800 text-slate-700 dark:text-gray-300 text-[13px] leading-5">
                     @forelse($sales as $sale)
-                        <tr class="hover:bg-slate-50/60 transition-colors">
-                            <td class="px-5 py-4 font-mono font-bold text-slate-900 whitespace-nowrap">
-                                <div>{{ $sale->nomor_order }}</div>
-                                <span class="text-[11px] text-slate-400 font-normal">{{ $sale->tanggal_pemesanan->format('d M Y') }}</span>
+                        <tr class="hover:bg-slate-50/60 dark:hover:bg-gray-800/40 transition-colors">
+                            <td class="px-3.5 py-2.5 font-mono font-medium text-slate-900 dark:text-white whitespace-nowrap tabular-nums">
+                                <div class="font-bold">{{ $sale->nomor_order }}</div>
+                                <span class="text-[11px] text-slate-400 dark:text-gray-500 font-normal font-sans">{{ $sale->tanggal_pemesanan->format('d M Y') }}</span>
                             </td>
-                            <td class="px-5 py-4">
-                                <div class="font-bold text-slate-900">{{ $sale->customer->nama ?? '-' }}</div>
-                                <a href="{{ $sale->customer?->wa_link }}" target="_blank" class="text-[11px] font-mono text-emerald-700 hover:underline">
+                            <td class="px-3.5 py-2.5">
+                                <div class="font-medium text-slate-900 dark:text-white">{{ $sale->customer->nama ?? '-' }}</div>
+                                <a href="{{ $sale->customer?->wa_link }}" target="_blank" class="text-[11px] font-mono text-emerald-600 hover:underline tabular-nums">
                                     {{ $sale->customer?->no_whatsapp }}
                                 </a>
                             </td>
-                            <td class="px-5 py-4 text-slate-600">
+                            <td class="px-3.5 py-2.5 text-slate-600 dark:text-gray-400">
                                 {{ $sale->openPo->nama_po ?? '-' }}
                             </td>
-                            <td class="px-5 py-4 max-w-xs">
+                            <td class="px-3.5 py-2.5 max-w-xs">
                                 <div class="text-[11px] space-y-0.5">
                                     @foreach($sale->items as $item)
                                         <div class="truncate">
-                                            <span class="font-bold text-slate-900">{{ $item->jumlah_paket }}x</span> {{ $item->nama_produk_snapshot }}
+                                            <span class="font-semibold text-slate-900 dark:text-white tabular-nums">{{ $item->jumlah_paket }}x</span> {{ $item->nama_produk_snapshot }}
                                         </div>
                                     @endforeach
                                 </div>
                             </td>
-                            <td class="px-5 py-4 text-right whitespace-nowrap font-extrabold text-slate-900">
+                            <td class="px-3.5 py-2.5 text-right whitespace-nowrap font-semibold text-slate-900 dark:text-white tabular-nums">
                                 <x-money :value="$sale->total_tagihan" />
                                 @if($sale->remaining_balance > 0)
-                                    <span class="block text-[10px] text-rose-600 font-semibold">
+                                    <span class="block text-[10px] text-rose-600 font-semibold tabular-nums">
                                         Sisa: <x-money :value="$sale->remaining_balance" />
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-5 py-4 whitespace-nowrap">
+                            <td class="px-3.5 py-2.5 whitespace-nowrap">
                                 @if($sale->status_pembayaran === 'lunas')
                                     <x-badge variant="emerald" :dot="true">LUNAS</x-badge>
                                 @elseif($sale->status_pembayaran === 'dp')
-                                    <x-badge variant="amber" :dot="true">DP</x-badge>
+                                    <x-badge variant="blue" :dot="true">DP</x-badge>
                                 @else
                                     <x-badge variant="rose" :dot="true">BELUM BAYAR</x-badge>
                                 @endif
                             </td>
-                            <td class="px-5 py-4 whitespace-nowrap">
+                            <td class="px-3.5 py-2.5 whitespace-nowrap">
                                 <select
                                     wire:change="updateOrderStatus({{ $sale->id }}, $event.target.value)"
-                                    class="text-[11px] font-semibold rounded-lg px-2 py-1 bg-slate-50 border border-slate-200 text-slate-800 cursor-pointer"
+                                    class="text-xs font-medium py-1 px-2 rounded-md border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-700 dark:text-gray-300 cursor-pointer"
                                 >
                                     <option value="menunggu_konfirmasi" @selected($sale->status_order === 'menunggu_konfirmasi')>Menunggu Konfirmasi</option>
                                     <option value="diproses" @selected($sale->status_order === 'diproses')>Diproses</option>
@@ -142,14 +142,14 @@
                                     <option value="dibatalkan" @selected($sale->status_order === 'dibatalkan')>Dibatalkan</option>
                                 </select>
                             </td>
-                            <td class="px-5 py-4 text-right whitespace-nowrap">
+                            <td class="px-3.5 py-2.5 text-right whitespace-nowrap">
                                 <button
                                     type="button"
                                     wire:click="viewReceipt({{ $sale->id }})"
-                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-50 dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-gray-750 text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-gray-700 font-medium text-xs transition-colors cursor-pointer"
                                     title="Lihat / Cetak Struk Nota"
                                 >
-                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                                     </svg>
                                     <span>Nota Struk</span>

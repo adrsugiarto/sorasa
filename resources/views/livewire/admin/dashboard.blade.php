@@ -19,7 +19,7 @@
     </div>
 
     <!-- Global Reactive Filter Toolbar -->
-    <div class="bg-white dark:bg-gray-850 p-3 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+    <div class="bg-white dark:bg-gray-900 p-3 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div class="flex flex-col sm:flex-row sm:items-center gap-2.5 flex-1">
             <span class="text-[11px] font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider shrink-0 flex items-center gap-1.5">
                 <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -82,7 +82,7 @@
     <!-- KPI Summary Grid (4 Kartu Inti Rapat - Stripe / Linear Style) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         <!-- 1. Total Penjualan (Omzet) -->
-        <div class="p-4 rounded-lg border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-850 shadow-xs flex flex-col justify-between">
+        <div class="p-4 rounded-lg border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xs flex flex-col justify-between">
             <div>
                 <p class="text-[11px] font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Total Omzet Penjualan</p>
                 <p class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mt-1 tabular-nums">
@@ -96,7 +96,7 @@
         </div>
 
         <!-- 2. Belanja Bahan Baku (Habis Pakai) -->
-        <div class="p-4 rounded-lg border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-850 shadow-xs flex flex-col justify-between">
+        <div class="p-4 rounded-lg border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xs flex flex-col justify-between">
             <div>
                 <p class="text-[11px] font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Total Pembelian (Bahan)</p>
                 <p class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mt-1 tabular-nums">
@@ -110,7 +110,7 @@
         </div>
 
         <!-- 3. Biaya Lain / Operasional -->
-        <div class="p-4 rounded-lg border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-850 shadow-xs flex flex-col justify-between">
+        <div class="p-4 rounded-lg border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xs flex flex-col justify-between">
             <div>
                 <p class="text-[11px] font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Biaya Lain (Operasional)</p>
                 <p class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mt-1 tabular-nums">
@@ -124,7 +124,7 @@
         </div>
 
         <!-- 4. Surplus Usaha Sederhana -->
-        <div class="p-4 rounded-lg border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-850 shadow-xs flex flex-col justify-between">
+        <div class="p-4 rounded-lg border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xs flex flex-col justify-between">
             <div>
                 <p class="text-[11px] font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Surplus Usaha Sederhana</p>
                 <p class="text-2xl font-bold tracking-tight mt-1 tabular-nums {{ $surplus >= 0 ? 'text-slate-900 dark:text-white' : 'text-rose-600' }}">
@@ -142,7 +142,7 @@
 
     <!-- Secondary Row: Arus Kas Masuk vs Piutang Belum Lunas -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div class="bg-white dark:bg-gray-850 p-3.5 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xs flex items-center justify-between">
+        <div class="bg-white dark:bg-gray-900 p-3.5 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xs flex items-center justify-between">
             <div>
                 <span class="text-[11px] font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Total Kas Diterima (Lunas & DP)</span>
                 <div class="text-xl font-bold text-slate-900 dark:text-white mt-0.5 tabular-nums">
@@ -155,7 +155,7 @@
             </span>
         </div>
 
-        <div class="bg-white dark:bg-gray-850 p-3.5 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xs flex items-center justify-between">
+        <div class="bg-white dark:bg-gray-900 p-3.5 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xs flex items-center justify-between">
             <div>
                 <span class="text-[11px] font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Total Tagihan Belum Lunas (Piutang)</span>
                 <div class="text-xl font-bold text-rose-600 mt-0.5 tabular-nums">
@@ -310,6 +310,7 @@
         Alpine.data('financialBarChart', (initialData) => ({
             chart: null,
             init() {
+                const isDark = document.documentElement.classList.contains('dark');
                 const options = {
                     series: [{
                         name: 'Nominal (Rp)',
@@ -319,7 +320,11 @@
                         type: 'bar',
                         height: 310,
                         toolbar: { show: false },
-                        fontFamily: 'inherit'
+                        fontFamily: 'inherit',
+                        background: 'transparent'
+                    },
+                    theme: {
+                        mode: isDark ? 'dark' : 'light'
                     },
                     plotOptions: {
                         bar: {
@@ -347,7 +352,7 @@
                         style: {
                             fontSize: '11px',
                             fontWeight: '600',
-                            colors: ['#475569']
+                            colors: [isDark ? '#cbd5e1' : '#475569']
                         }
                     },
                     legend: { show: false },
@@ -357,7 +362,7 @@
                             style: {
                                 fontSize: '11px',
                                 fontWeight: 500,
-                                colors: '#64748b'
+                                colors: isDark ? '#94a3b8' : '#64748b'
                             }
                         },
                         axisBorder: { show: false },
@@ -370,11 +375,12 @@
                             },
                             style: {
                                 fontSize: '10px',
-                                colors: '#94a3b8'
+                                colors: isDark ? '#94a3b8' : '#94a3b8'
                             }
                         }
                     },
                     tooltip: {
+                        theme: isDark ? 'dark' : 'light',
                         y: {
                             formatter: function (val) {
                                 return 'Rp ' + Number(val).toLocaleString('id-ID');
@@ -382,7 +388,7 @@
                         }
                     },
                     grid: {
-                        borderColor: '#f1f5f9',
+                        borderColor: isDark ? '#1f2937' : '#f1f5f9',
                         strokeDashArray: 4
                     }
                 };
@@ -403,6 +409,19 @@
                         }]);
                     }
                 });
+
+                window.addEventListener('theme-changed', (event) => {
+                    if (this.chart) {
+                        const dark = event.detail === 'dark';
+                        this.chart.updateOptions({
+                            theme: { mode: dark ? 'dark' : 'light' },
+                            grid: { borderColor: dark ? '#1f2937' : '#f1f5f9' },
+                            xaxis: { labels: { style: { colors: dark ? '#94a3b8' : '#64748b' } } },
+                            dataLabels: { style: { colors: [dark ? '#cbd5e1' : '#475569'] } },
+                            tooltip: { theme: dark ? 'dark' : 'light' }
+                        });
+                    }
+                });
             },
             destroy() {
                 if (this.chart) {
@@ -414,6 +433,7 @@
         Alpine.data('trendAreaChart', (initialData) => ({
             chart: null,
             init() {
+                const isDark = document.documentElement.classList.contains('dark');
                 const options = {
                     series: [
                         {
@@ -431,7 +451,11 @@
                         height: 310,
                         type: 'line',
                         toolbar: { show: false },
-                        fontFamily: 'inherit'
+                        fontFamily: 'inherit',
+                        background: 'transparent'
+                    },
+                    theme: {
+                        mode: isDark ? 'dark' : 'light'
                     },
                     stroke: {
                         width: [2.5, 0],
@@ -453,7 +477,7 @@
                             style: {
                                 fontSize: '10px',
                                 fontWeight: 500,
-                                colors: '#64748b'
+                                colors: isDark ? '#94a3b8' : '#64748b'
                             }
                         }
                     },
@@ -469,7 +493,7 @@
                         },
                         {
                             opposite: true,
-                            title: { text: 'Pesanan', style: { fontSize: '10px', color: '#64748b' } },
+                            title: { text: 'Pesanan', style: { fontSize: '10px', color: isDark ? '#94a3b8' : '#64748b' } },
                             labels: {
                                 formatter: function (val) {
                                     return Math.round(val);
@@ -479,6 +503,7 @@
                         }
                     ],
                     tooltip: {
+                        theme: isDark ? 'dark' : 'light',
                         y: {
                             formatter: function (val, { seriesIndex }) {
                                 if (seriesIndex === 0) {
@@ -489,7 +514,7 @@
                         }
                     },
                     grid: {
-                        borderColor: '#f1f5f9',
+                        borderColor: isDark ? '#1f2937' : '#f1f5f9',
                         strokeDashArray: 4
                     }
                 };
@@ -507,6 +532,22 @@
                             { name: 'Omzet (Rp)', data: newData.seriesOmzet },
                             { name: 'Pesanan', data: newData.seriesCount }
                         ]);
+                    }
+                });
+
+                window.addEventListener('theme-changed', (event) => {
+                    if (this.chart) {
+                        const dark = event.detail === 'dark';
+                        this.chart.updateOptions({
+                            theme: { mode: dark ? 'dark' : 'light' },
+                            grid: { borderColor: dark ? '#1f2937' : '#f1f5f9' },
+                            xaxis: { labels: { style: { colors: dark ? '#94a3b8' : '#64748b' } } },
+                            yaxis: [
+                                { labels: { style: { colors: '#94a3b8' } } },
+                                { labels: { style: { colors: '#94a3b8' } }, title: { style: { color: dark ? '#94a3b8' : '#64748b' } } }
+                            ],
+                            tooltip: { theme: dark ? 'dark' : 'light' }
+                        });
                     }
                 });
             },

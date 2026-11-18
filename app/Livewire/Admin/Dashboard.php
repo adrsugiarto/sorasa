@@ -58,6 +58,61 @@ class Dashboard extends Component
         $this->endDate = null;
     }
 
+    public function mount(): void
+    {
+        if (empty($this->chartFinancial)) {
+            $this->chartFinancial = [
+                'categories' => ['Penjualan (Omzet)', 'Pembelian Bahan', 'Biaya Operasional', 'Surplus Usaha'],
+                'data' => [0, 0, 0, 0],
+                'colors' => ['#2563eb', '#e11d48', '#64748b', '#10b981'],
+            ];
+        }
+
+        if (empty($this->chartTrend)) {
+            $this->chartTrend = [
+                'categories' => [],
+                'seriesOmzet' => [],
+                'seriesCount' => [],
+            ];
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function chartFinancial(): array
+    {
+        return $this->chartFinancial;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function chartTrend(): array
+    {
+        return $this->chartTrend;
+    }
+
+    /**
+     * Magic call fallback to gracefully handle any component method call on chart properties.
+     *
+     * @param  string  $method
+     * @param  array<int, mixed>  $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        if ($method === 'chartFinancial') {
+            return $this->chartFinancial;
+        }
+
+        if ($method === 'chartTrend') {
+            return $this->chartTrend;
+        }
+
+        return parent::__call($method, $parameters);
+    }
+
     /**
      * Render dashboard view with reactive metrics, chart data, and top products.
      */

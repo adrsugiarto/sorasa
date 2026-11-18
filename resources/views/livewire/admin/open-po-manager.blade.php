@@ -141,7 +141,7 @@
         <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
             <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity" wire:click="closeModal"></div>
 
-            <div class="relative w-full max-w-lg bg-white dark:bg-gray-850 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10">
+            <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10">
                 <div class="px-5 py-3.5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
                         {{ $isEditing ? 'Edit Batch Open PO' : 'Buat Batch Open PO Baru' }}
@@ -284,7 +284,7 @@
         <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity" wire:click="closeDetailModal"></div>
 
-            <div class="relative w-full max-w-2xl bg-white dark:bg-gray-850 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10">
+            <div class="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10">
                 <!-- Modal Header -->
                 <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-gray-800/80 border-b border-slate-200 dark:border-gray-800 flex items-center justify-between">
                     <div>

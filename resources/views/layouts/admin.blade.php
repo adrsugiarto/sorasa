@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" dir="ltr" class="h-full bg-gray-50 dark:bg-gray-900">
+<html lang="id" dir="ltr" class="h-full bg-slate-50 dark:bg-gray-950">
 
 <head>
     <meta charset="utf-8">
@@ -129,7 +129,7 @@
     </script>
 </head>
 
-<body class="h-full font-sans antialiased text-slate-800 bg-slate-50 dark:bg-gray-900 dark:text-slate-200">
+<body class="h-full font-sans antialiased text-slate-800 bg-slate-50 dark:bg-gray-950 dark:text-slate-200">
     <div
         class="min-h-screen xl:flex sidebar-expanded"
         x-data

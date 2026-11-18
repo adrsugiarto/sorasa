@@ -51,29 +51,29 @@ $maxWidthClasses = match($maxWidth) {
         x-transition:leave="ease-in duration-150"
         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        class="relative w-full {{ $maxWidthClasses }} mx-auto my-8 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden transform transition-all"
+        class="relative w-full {{ $maxWidthClasses }} mx-auto my-8 bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all text-slate-800 dark:text-slate-200"
     >
         @if($title)
-            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                <h3 class="text-base font-semibold text-slate-900">{{ $title }}</h3>
+            <div class="px-5 py-3.5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">{{ $title }}</h3>
                 <button
                     type="button"
                     x-on:click="show = false"
-                    class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                    class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors"
                 >
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
         @endif
 
-        <div class="p-6">
+        <div class="p-5">
             {{ $slot }}
         </div>
 
         @if(isset($footer))
-            <div class="px-6 py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-end gap-3">
+            <div class="px-5 py-3 bg-slate-50/80 dark:bg-gray-800/50 border-t border-slate-100 dark:border-gray-800 flex items-center justify-end gap-2.5">
                 {{ $footer }}
             </div>
         @endif

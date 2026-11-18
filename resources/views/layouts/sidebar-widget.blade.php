@@ -20,7 +20,7 @@
             </div>
         @else
             <p class="text-[10px] text-slate-500 dark:text-gray-400 mt-0.5">
-                Kitchen & Pastry POS
+                Point of Sale (POS)
             </p>
         @endif
     </div>
