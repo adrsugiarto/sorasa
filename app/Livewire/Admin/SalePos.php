@@ -118,14 +118,34 @@ class SalePos extends Component
     /**
      * When customer is selected, auto fill delivery details if not custom.
      */
-    public function updatedCustomerId(int $val): void
+    public function updatedCustomerId($val = null): void
     {
-        $customer = Customer::find($val);
+        $id = $val ? (int) $val : null;
+        if (! $id) {
+            if (! $this->customDelivery) {
+                $this->nama_penerima = '';
+                $this->no_telepon_penerima = '';
+                $this->alamat_lengkap = '';
+            }
+
+            return;
+        }
+
+        $customer = Customer::find($id);
         if ($customer && ! $this->customDelivery) {
             $this->nama_penerima = $customer->nama;
             $this->no_telepon_penerima = $customer->no_whatsapp;
             $this->alamat_lengkap = $customer->alamat;
         }
+    }
+
+    /**
+     * Explicit customer selector method.
+     */
+    public function selectCustomer($id = null): void
+    {
+        $this->customer_id = $id ? (int) $id : null;
+        $this->updatedCustomerId($this->customer_id);
     }
 
     /**
@@ -266,9 +286,9 @@ class SalePos extends Component
     /**
      * Open quick add customer modal.
      */
-    public function openQuickCustomerModal(): void
+    public function openQuickCustomerModal(?string $prefill = null): void
     {
-        $this->quick_nama = '';
+        $this->quick_nama = $prefill ?: '';
         $this->quick_no_whatsapp = '';
         $this->quick_alamat = '';
         $this->quick_kategori = 'Reguler';
@@ -450,10 +470,6 @@ class SalePos extends Component
             ->get();
 
         $customers = Customer::query()
-            ->when($this->customerSearch, function ($q) {
-                $q->where('nama', 'like', '%'.$this->customerSearch.'%')
-                    ->orWhere('no_whatsapp', 'like', '%'.$this->customerSearch.'%');
-            })
             ->orderBy('nama')
             ->get();
 

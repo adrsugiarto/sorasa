@@ -293,4 +293,18 @@ class PhaseFourTransactionsTest extends TestCase
             'id' => $expense->id,
         ]);
     }
+
+    public function test_sale_pos_searchable_customer_selection_syncs_delivery_info(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(SalePos::class)
+            ->call('selectCustomer', $this->customer->id)
+            ->assertSet('customer_id', $this->customer->id)
+            ->assertSet('nama_penerima', $this->customer->nama)
+            ->assertSet('no_telepon_penerima', $this->customer->no_whatsapp)
+            ->assertSet('alamat_lengkap', $this->customer->alamat)
+            ->call('selectCustomer', null)
+            ->assertSet('customer_id', null)
+            ->assertSet('nama_penerima', '');
+    }
 }
