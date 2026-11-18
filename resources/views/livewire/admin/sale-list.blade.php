@@ -309,12 +309,28 @@
                     </div>
 
                     <!-- Bank Payment Info -->
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-1">
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-2">
                         <p class="text-[11px] font-bold text-slate-800 uppercase tracking-wider">Rekening Pembayaran Resmi:</p>
-                        <p class="text-xs font-mono font-bold text-amber-950">
-                            {{ $storeSettings['bank_name'] ?? 'BCA' }} — {{ $storeSettings['bank_account_number'] ?? '8420198273' }}
-                        </p>
-                        <p class="text-[11px] text-slate-600">a.n. {{ $storeSettings['bank_account_name'] ?? 'SORASA KULINER NUSANTARA' }}</p>
+                        @if(!empty($bankAccounts))
+                            <div class="space-y-1.5 divide-y divide-slate-100">
+                                @foreach($bankAccounts as $acc)
+                                    <div class="pt-1 first:pt-0">
+                                        <p class="text-xs font-mono font-bold text-amber-950">
+                                            {{ $acc['bank_name'] }} — {{ $acc['account_number'] }}
+                                            @if(!empty($acc['is_primary']))
+                                                <span class="text-[9px] uppercase px-1.5 py-0.2 bg-amber-100 text-amber-800 rounded font-bold font-sans">Utama</span>
+                                            @endif
+                                        </p>
+                                        <p class="text-[11px] text-slate-600">a.n. {{ $acc['account_name'] }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-xs font-mono font-bold text-amber-950">
+                                {{ $storeSettings['bank_name'] ?? 'BCA' }} — {{ $storeSettings['bank_account_number'] ?? '8420198273' }}
+                            </p>
+                            <p class="text-[11px] text-slate-600">a.n. {{ $storeSettings['bank_account_name'] ?? 'SORASA KULINER NUSANTARA' }}</p>
+                        @endif
                     </div>
 
                     <div class="text-center text-[10px] text-slate-400 pt-2">

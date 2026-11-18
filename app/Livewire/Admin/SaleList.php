@@ -36,6 +36,11 @@ class SaleList extends Component
     public array $storeSettings = [];
 
     /**
+     * @var array<int, array{id: string, bank_name: string, account_number: string, account_name: string, is_primary: bool}>
+     */
+    public array $bankAccounts = [];
+
+    /**
      * Reset pagination when search query changes.
      */
     public function updatingSearch(): void
@@ -65,6 +70,7 @@ class SaleList extends Component
             ->findOrFail($saleId);
 
         $this->storeSettings = Setting::all()->pluck('value', 'key')->toArray();
+        $this->bankAccounts = Setting::getBankAccounts();
         $this->showReceiptModal = true;
     }
 
