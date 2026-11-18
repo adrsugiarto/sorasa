@@ -295,164 +295,216 @@
     </div>
 
     <!-- Modal Tambah / Edit Rekening -->
-    @if($showBankModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/70 backdrop-blur-xs">
-            <div class="bg-white dark:bg-gray-900 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in duration-150">
-                <div class="px-4 py-3 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
-                            {{ $isEditingBank ? 'Edit Rekening Pembayaran' : 'Tambah Rekening Pembayaran Baru' }}
-                        </h3>
-                        <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Lengkapi informasi bank atau dompet digital untuk nota pesanan</p>
-                    </div>
-                    <button
-                        type="button"
-                        wire:click="$set('showBankModal', false)"
-                        class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-md cursor-pointer"
-                    >
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
+    <div
+        x-data="{ show: @entangle('showBankModal').live }"
+        x-show="show"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center"
+        style="display: none;"
+        @keydown.escape.window="show = false; $wire.set('showBankModal', false)"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-xs transition-opacity"
+            @click="show = false; $wire.set('showBankModal', false)"
+        ></div>
 
-                <form wire:submit="saveBankAccount" class="p-4 sm:p-5 space-y-3.5">
-                    <!-- Quick Bank Preset Pills -->
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-500 dark:text-gray-400 mb-1">
-                            Pilihan Bank Cepat:
-                        </label>
-                        <div class="flex flex-wrap gap-1.5">
-                            @foreach(['BCA', 'Mandiri', 'BRI', 'BNI', 'BSI', 'Bank Jago', 'SeaBank', 'QRIS', 'GoPay', 'DANA', 'ShopeePay'] as $bankPreset)
-                                <button
-                                    type="button"
-                                    wire:click="selectBankPreset('{{ $bankPreset }}')"
-                                    class="px-2.5 py-1 text-[11px] font-medium rounded-md border transition-all cursor-pointer {{ $bank_name === $bankPreset ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 dark:bg-gray-800 text-slate-700 dark:text-gray-300 border-slate-200 dark:border-gray-700 hover:border-blue-500' }}"
-                                >
-                                    {{ $bankPreset }}
-                                </button>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- Nama Bank -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
-                            Nama Bank / Penyedia E-Wallet <span class="text-rose-600">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            wire:model="bank_name"
-                            placeholder="Contoh: BCA (Bank Central Asia) atau QRIS"
-                            class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
-                        >
-                        @error('bank_name') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                    </div>
-
-                    <!-- Nomor Rekening -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
-                            Nomor Rekening / Nomor Akun / No. HP <span class="text-rose-600">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            wire:model="account_number"
-                            placeholder="Contoh: 8420198273 atau 081223456789"
-                            class="w-full px-3 py-1.5 text-xs font-mono font-bold bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white tabular-nums"
-                        >
-                        @error('account_number') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                    </div>
-
-                    <!-- Atas Nama -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
-                            Atas Nama Pemilik Rekening <span class="text-rose-600">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            wire:model="account_name"
-                            placeholder="Contoh: SORASA KULINER NUSANTARA"
-                            class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
-                        >
-                        @error('account_name') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                    </div>
-
-                    <!-- Jadikan Rekening Utama -->
-                    <div class="pt-0.5">
-                        <label class="inline-flex items-center gap-2 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                wire:model="is_primary"
-                                class="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
-                            >
-                            <span class="text-xs font-medium text-slate-700 dark:text-gray-300">
-                                Jadikan sebagai <strong>Rekening Utama</strong> (Prioritas Utama pada Nota)
-                            </span>
-                        </label>
-                    </div>
-
-                    <div class="pt-3 border-t border-slate-100 dark:border-gray-800 flex items-center justify-end gap-2">
-                        <button
-                            type="button"
-                            wire:click="$set('showBankModal', false)"
-                            class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-md transition-all cursor-pointer"
-                        >
-                            Batal
-                        </button>
-                        <button
-                            type="submit"
-                            wire:loading.attr="disabled"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-md font-medium text-xs shadow-xs transition-all disabled:opacity-50 cursor-pointer"
-                        >
-                            <span wire:loading.remove wire:target="saveBankAccount">
-                                {{ $isEditingBank ? 'Perbarui Rekening' : 'Simpan Rekening' }}
-                            </span>
-                            <span wire:loading wire:target="saveBankAccount" class="inline-flex items-center gap-1.5">
-                                <svg class="animate-spin w-3 h-3 text-white" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Menyimpan...
-                            </span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    @endif
-
-    <!-- Modal Konfirmasi Hapus Rekening -->
-    @if($showDeleteBankModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/70 backdrop-blur-xs">
-            <div class="bg-white dark:bg-gray-900 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xl max-w-sm w-full p-4 text-center space-y-3.5 animate-in fade-in zoom-in duration-150">
-                <div class="w-10 h-10 mx-auto rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-600 flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+            class="relative bg-white dark:bg-gray-900 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xl max-w-lg w-full overflow-hidden z-10"
+        >
+            <div class="px-4 py-3 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
                 <div>
-                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Hapus Rekening Pembayaran?</h3>
-                    <p class="text-xs text-slate-500 dark:text-gray-400 mt-1">
-                        Rekening <strong class="text-slate-800 dark:text-gray-200">{{ $deletingBankName }}</strong> tidak akan ditampilkan lagi pada nota pesanan.
-                    </p>
+                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
+                        {{ $isEditingBank ? 'Edit Rekening Pembayaran' : 'Tambah Rekening Pembayaran Baru' }}
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Lengkapi informasi bank atau dompet digital untuk nota pesanan</p>
                 </div>
-                <div class="flex items-center justify-center gap-2 pt-1">
+                <button
+                    type="button"
+                    @click="show = false; $wire.set('showBankModal', false)"
+                    class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-md cursor-pointer"
+                >
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form wire:submit="saveBankAccount" class="p-4 sm:p-5 space-y-3.5">
+                <!-- Quick Bank Preset Pills -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 dark:text-gray-400 mb-1">
+                        Pilihan Bank Cepat:
+                    </label>
+                    <div class="flex flex-wrap gap-1.5">
+                        @foreach(['BCA', 'Mandiri', 'BRI', 'BNI', 'BSI', 'Bank Jago', 'SeaBank', 'QRIS', 'GoPay', 'DANA', 'ShopeePay'] as $bankPreset)
+                            <button
+                                type="button"
+                                wire:click="selectBankPreset('{{ $bankPreset }}')"
+                                class="px-2.5 py-1 text-[11px] font-medium rounded-md border transition-all cursor-pointer {{ $bank_name === $bankPreset ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 dark:bg-gray-800 text-slate-700 dark:text-gray-300 border-slate-200 dark:border-gray-700 hover:border-blue-500' }}"
+                            >
+                                {{ $bankPreset }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Nama Bank -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                        Nama Bank / Penyedia E-Wallet <span class="text-rose-600">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        wire:model="bank_name"
+                        placeholder="Contoh: BCA (Bank Central Asia) atau QRIS"
+                        class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
+                    >
+                    @error('bank_name') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <!-- Nomor Rekening -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                        Nomor Rekening / Nomor Akun / No. HP <span class="text-rose-600">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        wire:model="account_number"
+                        placeholder="Contoh: 8420198273 atau 081223456789"
+                        class="w-full px-3 py-1.5 text-xs font-mono font-bold bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white tabular-nums"
+                    >
+                    @error('account_number') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <!-- Atas Nama -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+                        Atas Nama Pemilik Rekening <span class="text-rose-600">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        wire:model="account_name"
+                        placeholder="Contoh: SORASA KULINER NUSANTARA"
+                        class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
+                    >
+                    @error('account_name') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <!-- Jadikan Rekening Utama -->
+                <div class="pt-0.5">
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            wire:model="is_primary"
+                            class="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                        >
+                        <span class="text-xs font-medium text-slate-700 dark:text-gray-300">
+                            Jadikan sebagai <strong>Rekening Utama</strong> (Prioritas Utama pada Nota)
+                        </span>
+                    </label>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 dark:border-gray-800 flex items-center justify-end gap-2">
                     <button
                         type="button"
-                        wire:click="$set('showDeleteBankModal', false)"
-                        class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-md cursor-pointer"
+                        @click="show = false; $wire.set('showBankModal', false)"
+                        class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-md transition-all cursor-pointer"
                     >
                         Batal
                     </button>
                     <button
-                        type="button"
-                        wire:click="deleteBank"
-                        class="px-3.5 py-1.5 text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 active:scale-95 rounded-md shadow-xs transition-all cursor-pointer"
+                        type="submit"
+                        wire:loading.attr="disabled"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-md font-medium text-xs shadow-xs transition-all disabled:opacity-50 cursor-pointer"
                     >
-                        Ya, Hapus Rekening
+                        <span wire:loading.remove wire:target="saveBankAccount">
+                            {{ $isEditingBank ? 'Perbarui Rekening' : 'Simpan Rekening' }}
+                        </span>
+                        <span wire:loading wire:target="saveBankAccount" class="inline-flex items-center gap-1.5">
+                            <svg class="animate-spin w-3 h-3 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Menyimpan...
+                        </span>
                     </button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus Rekening -->
+    <div
+        x-data="{ show: @entangle('showDeleteBankModal').live }"
+        x-show="show"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center"
+        style="display: none;"
+        @keydown.escape.window="show = false; $wire.set('showDeleteBankModal', false)"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-xs transition-opacity"
+            @click="show = false; $wire.set('showDeleteBankModal', false)"
+        ></div>
+
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+            class="relative bg-white dark:bg-gray-900 rounded-lg border border-slate-200 dark:border-gray-800 shadow-xl max-w-sm w-full p-4 text-center space-y-3.5 z-10"
+        >
+            <div class="w-10 h-10 mx-auto rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-600 flex items-center justify-center">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Hapus Rekening Pembayaran?</h3>
+                <p class="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                    Rekening <strong class="text-slate-800 dark:text-gray-200">{{ $deletingBankName }}</strong> tidak akan ditampilkan lagi pada nota pesanan.
+                </p>
+            </div>
+            <div class="flex items-center justify-center gap-2 pt-1">
+                <button
+                    type="button"
+                    @click="show = false; $wire.set('showDeleteBankModal', false)"
+                    class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-md cursor-pointer"
+                >
+                    Batal
+                </button>
+                <button
+                    type="button"
+                    wire:click="deleteBank"
+                    class="px-3.5 py-1.5 text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 active:scale-95 rounded-md shadow-xs transition-all cursor-pointer"
+                >
+                    Ya, Hapus Rekening
+                </button>
             </div>
         </div>
-    @endif
+    </div>
 </div>

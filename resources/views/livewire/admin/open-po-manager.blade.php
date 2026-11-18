@@ -137,154 +137,204 @@
     </x-card>
 
     <!-- Modal Form Tambah / Edit Batch -->
-    @if($showModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
-            <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity" wire:click="closeModal"></div>
+    <div
+        x-data="{ show: @entangle('showModal').live }"
+        x-show="show"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center"
+        style="display: none;"
+        @keydown.escape.window="show = false; $wire.closeModal()"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs transition-opacity"
+            @click="show = false; $wire.closeModal()"
+        ></div>
 
-            <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10">
-                <div class="px-5 py-3.5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
-                        {{ $isEditing ? 'Edit Batch Open PO' : 'Buat Batch Open PO Baru' }}
-                    </h3>
-                    <button type="button" wire:click="closeModal" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+            class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10"
+        >
+            <div class="px-5 py-3.5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
+                    {{ $isEditing ? 'Edit Batch Open PO' : 'Buat Batch Open PO Baru' }}
+                </h3>
+                <button type="button" @click="show = false; $wire.closeModal()" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
-                <form wire:submit="save">
-                    <div class="p-5 space-y-3.5 max-h-[75vh] overflow-y-auto">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                            <div>
-                                <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                    Kode Batch *
-                                </label>
-                                <input
-                                    wire:model="kode_po"
-                                    type="text"
-                                    required
-                                    placeholder="PO-202611-01"
-                                    class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 font-mono font-bold uppercase text-slate-900 dark:text-white tabular-nums"
-                                >
-                                @error('kode_po') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                    Status Batch *
-                                </label>
-                                <select
-                                    wire:model="status"
-                                    required
-                                    class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
-                                >
-                                    <option value="draft">Draft</option>
-                                    <option value="open">Open (Buka Pemesanan)</option>
-                                    <option value="closed">Closed (Tutup)</option>
-                                    <option value="completed">Completed (Selesai)</option>
-                                </select>
-                                @error('status') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                            </div>
-                        </div>
-
+            <form wire:submit="save">
+                <div class="p-5 space-y-3.5 max-h-[75vh] overflow-y-auto">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                Nama Batch PO *
+                                Kode Batch *
                             </label>
                             <input
-                                wire:model="nama_po"
+                                wire:model="kode_po"
                                 type="text"
                                 required
-                                placeholder="Contoh: PO Batch #15 - Weekend Nusantara"
-                                class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
+                                placeholder="PO-202611-01"
+                                class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 font-mono font-bold uppercase text-slate-900 dark:text-white tabular-nums"
                             >
-                            @error('nama_po') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                            <div>
-                                <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                    Tanggal Buka *
-                                </label>
-                                <input
-                                    wire:model="tanggal_buka"
-                                    type="date"
-                                    required
-                                    class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
-                                >
-                                @error('tanggal_buka') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                    Tanggal Tutup *
-                                </label>
-                                <input
-                                    wire:model="tanggal_tutup"
-                                    type="date"
-                                    required
-                                    class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
-                                >
-                                @error('tanggal_tutup') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                            </div>
+                            @error('kode_po') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                Jadwal Pengiriman Pesanan *
+                                Status Batch *
+                            </label>
+                            <select
+                                wire:model="status"
+                                required
+                                class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
+                            >
+                                <option value="draft">Draft</option>
+                                <option value="open">Open (Buka Pemesanan)</option>
+                                <option value="closed">Closed (Tutup)</option>
+                                <option value="completed">Completed (Selesai)</option>
+                            </select>
+                            @error('status') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                            Nama Batch PO *
+                        </label>
+                        <input
+                            wire:model="nama_po"
+                            type="text"
+                            required
+                            placeholder="Contoh: PO Batch #15 - Weekend Nusantara"
+                            class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
+                        >
+                        @error('nama_po') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                                Tanggal Buka *
                             </label>
                             <input
-                                wire:model="tanggal_pengiriman"
+                                wire:model="tanggal_buka"
                                 type="date"
                                 required
-                                class="w-full px-2.5 py-1.5 text-xs bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 font-medium text-slate-900 dark:text-white"
+                                class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
                             >
-                            @error('tanggal_pengiriman') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+                            @error('tanggal_buka') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                Catatan Batch (Opsional)
+                                Tanggal Tutup *
                             </label>
-                            <textarea
-                                wire:model="catatan"
-                                rows="2"
-                                placeholder="Contoh: Menu spesial rendang sapi & liwet komplit..."
+                            <input
+                                wire:model="tanggal_tutup"
+                                type="date"
+                                required
                                 class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
-                            ></textarea>
-                            @error('catatan') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+                            >
+                            @error('tanggal_tutup') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
-                    <div class="px-5 py-3 bg-slate-50 dark:bg-gray-800/60 border-t border-slate-100 dark:border-gray-800 flex items-center justify-end gap-2">
-                        <button
-                            type="button"
-                            wire:click="closeModal"
-                            class="px-3 py-1.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 text-xs font-medium rounded-md shadow-xs"
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                            Jadwal Pengiriman Pesanan *
+                        </label>
+                        <input
+                            wire:model="tanggal_pengiriman"
+                            type="date"
+                            required
+                            class="w-full px-2.5 py-1.5 text-xs bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 font-medium text-slate-900 dark:text-white"
                         >
-                            Batal
-                        </button>
-                        <button
-                            type="submit"
-                            wire:loading.attr="disabled"
-                            class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md shadow-xs disabled:opacity-50"
-                        >
-                            <span wire:loading.remove>{{ $isEditing ? 'Simpan Perubahan' : 'Buat Batch PO' }}</span>
-                            <span wire:loading>Menyimpan...</span>
-                        </button>
+                        @error('tanggal_pengiriman') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
                     </div>
-                </form>
-            </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                            Catatan Batch (Opsional)
+                        </label>
+                        <textarea
+                            wire:model="catatan"
+                            rows="2"
+                            placeholder="Contoh: Menu spesial rendang sapi & liwet komplit..."
+                            class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
+                        ></textarea>
+                        @error('catatan') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+
+                <div class="px-5 py-3 bg-slate-50 dark:bg-gray-800/60 border-t border-slate-100 dark:border-gray-800 flex items-center justify-end gap-2">
+                    <button
+                        type="button"
+                        @click="show = false; $wire.closeModal()"
+                        class="px-3 py-1.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 text-xs font-medium rounded-md shadow-xs cursor-pointer"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        type="submit"
+                        wire:loading.attr="disabled"
+                        class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md shadow-xs disabled:opacity-50 cursor-pointer"
+                    >
+                        <span wire:loading.remove>{{ $isEditing ? 'Simpan Perubahan' : 'Buat Batch PO' }}</span>
+                        <span wire:loading>Menyimpan...</span>
+                    </button>
+                </div>
+            </form>
         </div>
-    @endif
+    </div>
 
     <!-- Modal Rekap Produksi Dapur (Detail Batch) -->
-    @if($showDetailModal && $selectedBatch)
-        <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
-            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity" wire:click="closeDetailModal"></div>
+    <div
+        x-data="{ show: @entangle('showDetailModal').live }"
+        x-show="show"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center"
+        style="display: none;"
+        @keydown.escape.window="show = false; $wire.closeDetailModal()"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
+            @click="show = false; $wire.closeDetailModal()"
+        ></div>
 
-            <div class="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10">
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+            class="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10"
+        >
+            @if($selectedBatch)
                 <!-- Modal Header -->
                 <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-gray-800/80 border-b border-slate-200 dark:border-gray-800 flex items-center justify-between">
                     <div>
@@ -295,7 +345,7 @@
                             Rekap Produksi Dapur — {{ $selectedBatch->nama_po }}
                         </h3>
                     </div>
-                    <button type="button" wire:click="closeDetailModal" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-200/60 dark:hover:bg-gray-700">
+                    <button type="button" @click="show = false; $wire.closeDetailModal()" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-200/60 dark:hover:bg-gray-700 cursor-pointer">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -384,13 +434,13 @@
                     <span class="text-slate-500 dark:text-gray-400">Gunakan data ini untuk belanja bahan & persiapan porsi dapur.</span>
                     <button
                         type="button"
-                        wire:click="closeDetailModal"
-                        class="px-3 py-1.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 font-medium rounded-md shadow-xs"
+                        @click="show = false; $wire.closeDetailModal()"
+                        class="px-3 py-1.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 font-medium rounded-md shadow-xs cursor-pointer"
                     >
                         Tutup
                     </button>
                 </div>
-            </div>
+            @endif
         </div>
-    @endif
+    </div>
 </div>

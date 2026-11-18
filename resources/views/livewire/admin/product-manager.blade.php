@@ -64,6 +64,15 @@
                         <div class="w-full h-36 rounded-md overflow-hidden bg-slate-100 dark:bg-gray-800 border border-slate-100 dark:border-gray-800">
                             <img src="{{ asset('storage/' . $product->foto_produk) }}" alt="{{ $product->nama_produk }}" class="w-full h-full object-cover">
                         </div>
+                    @else
+                        <div class="w-full h-24 rounded-md overflow-hidden bg-slate-50 dark:bg-gray-800/40 border border-dashed border-slate-200 dark:border-gray-800 flex items-center justify-center text-slate-400 dark:text-gray-500">
+                            <div class="flex items-center gap-1.5 text-[11px] font-medium">
+                                <svg class="w-4 h-4 stroke-[1.25]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span>Tanpa Foto Menu</span>
+                            </div>
+                        </div>
                     @endif
 
                     <div>
@@ -155,171 +164,217 @@
     </div>
 
     <!-- Product Modal Form (Livewire controlled) -->
-    @if($showModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
-            <div class="fixed inset-0 bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs transition-opacity" wire:click="closeModal"></div>
+    <div
+        x-data="{ show: @entangle('showModal').live }"
+        x-show="show"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center"
+        style="display: none;"
+        @keydown.escape.window="show = false; $wire.closeModal()"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs transition-opacity"
+            @click="show = false; $wire.closeModal()"
+        ></div>
 
-            <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10 text-slate-800 dark:text-slate-200">
-                <div class="px-5 py-3.5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
-                        {{ $isEditing ? 'Edit Data Produk' : 'Tambah Produk Baru' }}
-                    </h3>
-                    <button type="button" wire:click="closeModal" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+            class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10 text-slate-800 dark:text-slate-200"
+        >
+            <div class="px-5 py-3.5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
+                    {{ $isEditing ? 'Edit Data Produk' : 'Tambah Produk Baru' }}
+                </h3>
+                <button type="button" @click="show = false; $wire.closeModal()" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
-                <form wire:submit="save">
-                    <div class="p-5 space-y-3.5 max-h-[75vh] overflow-y-auto text-xs">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                            <!-- Kode Produk -->
-                            <div>
-                                <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                    Kode Produk *
-                                </label>
-                                <input
-                                    wire:model="kode_produk"
-                                    type="text"
-                                    required
-                                    placeholder="PRD-001"
-                                    class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 font-mono text-slate-900 dark:text-white uppercase tabular-nums"
-                                >
-                                @error('kode_produk') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                            </div>
-
-                            <!-- Kategori -->
-                            <div>
-                                <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                    Kategori *
-                                </label>
-                                <select
-                                    wire:model="kategori"
-                                    required
-                                    class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
-                                >
-                                    @foreach($categories as $cat)
-                                        <option value="{{ $cat }}">{{ $cat }}</option>
-                                    @endforeach
-                                </select>
-                                @error('kategori') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                            </div>
-                        </div>
-
-                        <!-- Nama Produk -->
+            <form wire:submit="save">
+                <div class="p-5 space-y-3.5 max-h-[75vh] overflow-y-auto text-xs">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <!-- Kode Produk -->
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                Nama Produk *
+                                Kode Produk *
                             </label>
                             <input
-                                wire:model="nama_produk"
+                                wire:model="kode_produk"
                                 type="text"
                                 required
-                                placeholder="Contoh: Rendang Sapi Porsi 500g"
+                                placeholder="PRD-001"
+                                class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 font-mono text-slate-900 dark:text-white uppercase tabular-nums"
+                            >
+                            @error('kode_produk') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <!-- Kategori -->
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                                Kategori *
+                            </label>
+                            <select
+                                wire:model="kategori"
+                                required
                                 class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
                             >
-                            @error('nama_produk') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                        </div>
-
-                        <!-- Harga Jual -->
-                        <div>
-                            <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                Harga Jual Satuan (Rp) *
-                            </label>
-                            <input
-                                wire:model="harga_jual"
-                                type="number"
-                                step="any"
-                                min="0"
-                                required
-                                placeholder="125000"
-                                class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 font-mono font-bold text-slate-900 dark:text-white tabular-nums"
-                            >
-                            @error('harga_jual') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                        </div>
-
-                        <!-- Foto Produk -->
-                        <div>
-                            <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                Foto Produk (Opsional)
-                            </label>
-                            <input
-                                wire:model="foto"
-                                type="file"
-                                accept="image/*"
-                                class="w-full text-xs text-slate-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-slate-100 dark:file:bg-gray-800 file:text-slate-700 dark:file:text-gray-300 hover:file:bg-slate-200 dark:hover:file:bg-gray-700"
-                            >
-                            @error('foto') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-
-                            @if($foto)
-                                <div class="mt-2 text-[11px] text-slate-500 dark:text-gray-400 flex items-center gap-2">
-                                    <span>Preview:</span>
-                                    <img src="{{ $foto->temporaryUrl() }}" class="w-12 h-12 rounded-md object-cover border border-slate-200 dark:border-gray-700">
-                                </div>
-                            @elseif($existingFoto)
-                                <div class="mt-2 text-[11px] text-slate-500 dark:text-gray-400 flex items-center gap-2">
-                                    <span>Foto tersimpan:</span>
-                                    <img src="{{ asset('storage/' . $existingFoto) }}" class="w-12 h-12 rounded-md object-cover border border-slate-200 dark:border-gray-700">
-                                </div>
-                            @endif
-                        </div>
-
-                        <!-- Deskripsi -->
-                        <div>
-                            <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                                Deskripsi Menu
-                            </label>
-                            <textarea
-                                wire:model="deskripsi"
-                                rows="3"
-                                placeholder="Komposisi bumbu, rasa, petunjuk penyajian..."
-                                class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
-                            ></textarea>
-                            @error('deskripsi') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
-                        </div>
-
-                        <!-- Checkboxes: Active & Published -->
-                        <div class="pt-2 flex items-center gap-4">
-                            <label class="inline-flex items-center gap-2 cursor-pointer">
-                                <input
-                                    wire:model="is_active"
-                                    type="checkbox"
-                                    class="rounded border-slate-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
-                                >
-                                <span class="text-xs font-medium text-slate-700 dark:text-gray-300">Tampilkan di Kasir POS</span>
-                            </label>
-
-                            <label class="inline-flex items-center gap-2 cursor-pointer">
-                                <input
-                                    wire:model="is_published"
-                                    type="checkbox"
-                                    class="rounded border-slate-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
-                                >
-                                <span class="text-xs font-medium text-slate-700 dark:text-gray-300">Siap untuk Storefront Publik</span>
-                            </label>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat }}">{{ $cat }}</option>
+                                @endforeach
+                            </select>
+                            @error('kategori') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
-                    <div class="px-5 py-3 bg-slate-50 dark:bg-gray-800/60 border-t border-slate-100 dark:border-gray-800 flex items-center justify-end gap-2">
-                        <button
-                            type="button"
-                            wire:click="closeModal"
-                            class="px-3 py-1.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-750 text-slate-700 dark:text-gray-300 text-xs font-medium rounded-md shadow-xs cursor-pointer"
+                    <!-- Nama Produk -->
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                            Nama Produk *
+                        </label>
+                        <input
+                            wire:model="nama_produk"
+                            type="text"
+                            required
+                            placeholder="Contoh: Paket Ayam Bakar Madu"
+                            class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
                         >
-                            Batal
-                        </button>
-                        <button
-                            type="submit"
-                            wire:loading.attr="disabled"
-                            class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md shadow-xs disabled:opacity-50 cursor-pointer"
-                        >
-                            <span wire:loading.remove>{{ $isEditing ? 'Simpan Perubahan' : 'Tambah Produk' }}</span>
-                            <span wire:loading>Menyimpan...</span>
-                        </button>
+                        @error('nama_produk') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
                     </div>
-                </form>
-            </div>
+
+                    <!-- Harga Jual -->
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                            Harga Jual Satuan (Rp) *
+                        </label>
+                        <input
+                            wire:model="harga_jual"
+                            type="number"
+                            step="any"
+                            min="0"
+                            required
+                            placeholder="125000"
+                            class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 font-mono font-bold text-slate-900 dark:text-white tabular-nums"
+                        >
+                        @error('harga_jual') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <!-- Foto Produk -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider">
+                                Foto Produk / Menu (Opsional)
+                            </label>
+                            <span class="text-[11px] text-slate-400">Bisa upload nanti / kosongkan</span>
+                        </div>
+                        <input
+                            wire:model="foto"
+                            type="file"
+                            accept="image/*"
+                            class="w-full text-xs text-slate-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-slate-100 dark:file:bg-gray-800 file:text-slate-700 dark:file:text-gray-300 hover:file:bg-slate-200 dark:hover:file:bg-gray-700 cursor-pointer"
+                        >
+                        <div wire:loading wire:target="foto" class="text-[11px] text-blue-600 mt-1 font-medium">
+                            Mengunggah foto...
+                        </div>
+                        @error('foto') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+
+                        @if($foto)
+                            <div class="mt-2 text-[11px] text-slate-600 dark:text-gray-300 flex items-center justify-between p-2 rounded-md bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700">
+                                <div class="flex items-center gap-2">
+                                    <img src="{{ $foto->temporaryUrl() }}" class="w-12 h-12 rounded-md object-cover border border-slate-200 dark:border-gray-700 shadow-2xs">
+                                    <div>
+                                        <p class="font-medium text-slate-900 dark:text-white">Foto baru dipilih</p>
+                                        <p class="text-[10px] text-slate-400">Siap disimpan</p>
+                                    </div>
+                                </div>
+                                <button type="button" wire:click="$set('foto', null)" class="text-[11px] font-medium text-rose-600 hover:underline cursor-pointer">
+                                    Batal Ganti Foto
+                                </button>
+                            </div>
+                        @elseif($existingFoto)
+                            <div class="mt-2 text-[11px] text-slate-600 dark:text-gray-300 flex items-center justify-between p-2 rounded-md bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700">
+                                <div class="flex items-center gap-2">
+                                    <img src="{{ asset('storage/' . $existingFoto) }}" class="w-12 h-12 rounded-md object-cover border border-slate-200 dark:border-gray-700 shadow-2xs">
+                                    <div>
+                                        <p class="font-medium text-slate-900 dark:text-white">Foto produk tersimpan</p>
+                                        <p class="text-[10px] text-slate-400">Tampil pada Kasir POS</p>
+                                    </div>
+                                </div>
+                                <button type="button" wire:click="removeFoto" class="text-[11px] font-medium text-rose-600 hover:underline cursor-pointer">
+                                    Hapus Foto
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Deskripsi -->
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                            Deskripsi Menu
+                        </label>
+                        <textarea
+                            wire:model="deskripsi"
+                            rows="3"
+                            placeholder="Komposisi bumbu, rasa, petunjuk penyajian..."
+                            class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
+                        ></textarea>
+                        @error('deskripsi') <p class="text-[11px] text-rose-600 mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <!-- Checkboxes: Active & Published -->
+                    <div class="pt-2 flex items-center gap-4">
+                        <label class="inline-flex items-center gap-2 cursor-pointer">
+                            <input
+                                wire:model="is_active"
+                                type="checkbox"
+                                class="rounded border-slate-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
+                            >
+                            <span class="text-xs font-medium text-slate-700 dark:text-gray-300">Tampilkan di Kasir POS</span>
+                        </label>
+
+                        <label class="inline-flex items-center gap-2 cursor-pointer">
+                            <input
+                                wire:model="is_published"
+                                type="checkbox"
+                                class="rounded border-slate-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
+                            >
+                            <span class="text-xs font-medium text-slate-700 dark:text-gray-300">Siap untuk Storefront Publik</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="px-5 py-3 bg-slate-50 dark:bg-gray-800/60 border-t border-slate-100 dark:border-gray-800 flex items-center justify-end gap-2">
+                    <button
+                        type="button"
+                        @click="show = false; $wire.closeModal()"
+                        class="px-3 py-1.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-750 text-slate-700 dark:text-gray-300 text-xs font-medium rounded-md shadow-xs cursor-pointer"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        type="submit"
+                        wire:loading.attr="disabled"
+                        class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md shadow-xs disabled:opacity-50 cursor-pointer"
+                    >
+                        <span wire:loading.remove>{{ $isEditing ? 'Simpan Perubahan' : 'Tambah Produk' }}</span>
+                        <span wire:loading>Menyimpan...</span>
+                    </button>
+                </div>
+            </form>
         </div>
-    @endif
+    </div>
 </div>

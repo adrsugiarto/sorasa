@@ -70,6 +70,14 @@ class Product extends Model
     }
 
     /**
+     * Get the photo asset URL or null.
+     */
+    public function getFotoUrlAttribute(): ?string
+    {
+        return $this->foto_produk ? asset('storage/'.$this->foto_produk) : null;
+    }
+
+    /**
      * Scope a query to only include active products.
      *
      * @param  Builder<Product>  $query

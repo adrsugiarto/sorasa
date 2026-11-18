@@ -215,114 +215,140 @@
     </x-card>
 
     <!-- MODAL FORM USER / ADMIN -->
-    @if($showModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 dark:bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-900 rounded-lg max-w-md w-full p-5 shadow-xl border border-slate-200 dark:border-gray-800 relative text-slate-800 dark:text-slate-200 animate-in fade-in zoom-in-95">
-                <div class="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-gray-800">
-                    <div>
-                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">
-                            {{ $isEditing ? 'Edit Akun & Reset Kata Sandi' : 'Tambah Akun Admin Baru' }}
-                        </h2>
-                        <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Kelola kredensial login dan hak akses operasional</p>
-                    </div>
-                    <button
-                        type="button"
-                        wire:click="closeModal"
-                        class="text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 p-1 rounded-md hover:bg-slate-100 dark:hover:bg-gray-800 cursor-pointer"
+    <div
+        x-data="{ show: @entangle('showModal').live }"
+        x-show="show"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center"
+        style="display: none;"
+        @keydown.escape.window="show = false; $wire.closeModal()"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-xs transition-opacity"
+            @click="show = false; $wire.closeModal()"
+        ></div>
+
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+            class="relative bg-white dark:bg-gray-900 rounded-lg max-w-md w-full p-5 shadow-xl border border-slate-200 dark:border-gray-800 text-slate-800 dark:text-slate-200 z-10"
+        >
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-gray-800">
+                <div>
+                    <h2 class="text-sm font-semibold text-slate-900 dark:text-white">
+                        {{ $isEditing ? 'Edit Akun & Reset Kata Sandi' : 'Tambah Akun Admin Baru' }}
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Kelola kredensial login dan hak akses operasional</p>
+                </div>
+                <button
+                    type="button"
+                    @click="show = false; $wire.closeModal()"
+                    class="text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 p-1 rounded-md hover:bg-slate-100 dark:hover:bg-gray-800 cursor-pointer"
+                >
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form wire:submit="save" class="mt-4 space-y-3.5 text-xs">
+                <!-- Nama Lengkap -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">Nama Lengkap *</label>
+                    <input
+                        wire:model="name"
+                        type="text"
+                        placeholder="Misal: Siti Aminah (Admin Dapur)"
+                        class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
+                        required
                     >
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    @error('name') <span class="text-[11px] text-rose-600 mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
-                <form wire:submit="save" class="mt-4 space-y-3.5 text-xs">
-                    <!-- Nama Lengkap -->
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">Nama Lengkap *</label>
-                        <input
-                            wire:model="name"
-                            type="text"
-                            placeholder="Misal: Siti Aminah (Admin Dapur)"
-                            class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
-                            required
-                        >
-                        @error('name') <span class="text-[11px] text-rose-600 mt-1 block">{{ $message }}</span> @enderror
-                    </div>
+                <!-- Email Login -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">Alamat Email Login *</label>
+                    <input
+                        wire:model="email"
+                        type="email"
+                        placeholder="admin@sorasa.test"
+                        class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
+                        required
+                    >
+                    @error('email') <span class="text-[11px] text-rose-600 mt-1 block">{{ $message }}</span> @enderror
+                </div>
 
-                    <!-- Email Login -->
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">Alamat Email Login *</label>
-                        <input
-                            wire:model="email"
-                            type="email"
-                            placeholder="admin@sorasa.test"
-                            class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
-                            required
-                        >
-                        @error('email') <span class="text-[11px] text-rose-600 mt-1 block">{{ $message }}</span> @enderror
-                    </div>
+                <!-- Role Selection -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">Peran / Hak Akses (Role) *</label>
+                    <select
+                        wire:model="role"
+                        class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
+                        required
+                    >
+                        <option value="admin">Admin Operasional (Kasir POS, Order, Belanja, Resep)</option>
+                        <option value="owner">Pemilik Usaha / Owner (Akses Penuh & Kelola Admin)</option>
+                    </select>
+                    @error('role') <span class="text-[11px] text-rose-600 mt-1 block">{{ $message }}</span> @enderror
+                </div>
 
-                    <!-- Role Selection -->
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">Peran / Hak Akses (Role) *</label>
-                        <select
-                            wire:model="role"
-                            class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium"
-                            required
-                        >
-                            <option value="admin">Admin Operasional (Kasir POS, Order, Belanja, Resep)</option>
-                            <option value="owner">Pemilik Usaha / Owner (Akses Penuh & Kelola Admin)</option>
-                        </select>
-                        @error('role') <span class="text-[11px] text-rose-600 mt-1 block">{{ $message }}</span> @enderror
-                    </div>
+                <!-- Password -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                        Kata Sandi {{ $isEditing ? '(Opsional: Isi hanya jika ingin mengganti)' : '*' }}
+                    </label>
+                    <input
+                        wire:model="password"
+                        type="password"
+                        placeholder="{{ $isEditing ? 'Biarkan kosong jika tetap' : 'Minimal 6 karakter' }}"
+                        class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
+                        {{ $isEditing ? '' : 'required' }}
+                    >
+                    @error('password') <span class="text-[11px] text-rose-600 mt-1 block">{{ $message }}</span> @enderror
+                </div>
 
-                    <!-- Password -->
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                            Kata Sandi {{ $isEditing ? '(Opsional: Isi hanya jika ingin mengganti)' : '*' }}
-                        </label>
-                        <input
-                            wire:model="password"
-                            type="password"
-                            placeholder="{{ $isEditing ? 'Biarkan kosong jika tetap' : 'Minimal 6 karakter' }}"
-                            class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
-                            {{ $isEditing ? '' : 'required' }}
-                        >
-                        @error('password') <span class="text-[11px] text-rose-600 mt-1 block">{{ $message }}</span> @enderror
-                    </div>
+                <!-- Password Confirmation -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">Ulangi Kata Sandi</label>
+                    <input
+                        wire:model="password_confirmation"
+                        type="password"
+                        placeholder="Ulangi kata sandi di atas"
+                        class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
+                        {{ $isEditing ? '' : 'required' }}
+                    >
+                </div>
 
-                    <!-- Password Confirmation -->
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-wider mb-1">Ulangi Kata Sandi</label>
-                        <input
-                            wire:model="password_confirmation"
-                            type="password"
-                            placeholder="Ulangi kata sandi di atas"
-                            class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white"
-                            {{ $isEditing ? '' : 'required' }}
-                        >
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-gray-800">
-                        <button
-                            type="button"
-                            wire:click="closeModal"
-                            class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md hover:bg-slate-50 dark:hover:bg-gray-750 cursor-pointer"
-                        >
-                            Batal
-                        </button>
-                        <button
-                            type="submit"
-                            wire:loading.attr="disabled"
-                            class="px-3.5 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
-                        >
-                            {{ $isEditing ? 'Simpan Perubahan' : 'Buat Akun' }}
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <!-- Actions -->
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-gray-800">
+                    <button
+                        type="button"
+                        @click="show = false; $wire.closeModal()"
+                        class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md hover:bg-slate-50 dark:hover:bg-gray-750 cursor-pointer"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        type="submit"
+                        wire:loading.attr="disabled"
+                        class="px-3.5 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                        {{ $isEditing ? 'Simpan Perubahan' : 'Buat Akun' }}
+                    </button>
+                </div>
+            </form>
         </div>
-    @endif
+    </div>
 </div>

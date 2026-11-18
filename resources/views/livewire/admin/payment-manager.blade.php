@@ -301,11 +301,37 @@
     @endif
 
     <!-- MODAL CATAT PEMBAYARAN / PELUNASAN -->
-    @if($showPaymentModal && $selectedSale)
-        <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
-            <div class="fixed inset-0 bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs transition-opacity" wire:click="closePaymentModal"></div>
+    <div
+        x-data="{ show: @entangle('showPaymentModal').live }"
+        x-show="show"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center"
+        style="display: none;"
+        @keydown.escape.window="show = false; $wire.closePaymentModal()"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs transition-opacity"
+            @click="show = false; $wire.closePaymentModal()"
+        ></div>
 
-            <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10 text-slate-800 dark:text-slate-200">
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+            class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10 text-slate-800 dark:text-slate-200"
+        >
+            @if($selectedSale)
                 <div class="px-5 py-3.5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
                     <div>
                         <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
@@ -315,7 +341,7 @@
                             Order #{{ $selectedSale->nomor_order }} — {{ $selectedSale->customer->nama ?? 'Umum' }}
                         </p>
                     </div>
-                    <button type="button" wire:click="closePaymentModal" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
+                    <button type="button" @click="show = false; $wire.closePaymentModal()" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 cursor-pointer">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -442,7 +468,7 @@
                     <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-gray-800">
                         <button
                             type="button"
-                            wire:click="closePaymentModal"
+                            @click="show = false; $wire.closePaymentModal()"
                             class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-md hover:bg-slate-50 dark:hover:bg-gray-750 cursor-pointer"
                         >
                             Batal
@@ -456,30 +482,58 @@
                         </button>
                     </div>
                 </form>
-            </div>
+            @endif
         </div>
-    @endif
+    </div>
 
     <!-- LIGHTBOX MODAL BUKTI TRANSFER -->
-    @if($showProofModal && $proofUrl)
-        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 dark:bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-900 rounded-lg max-w-xl w-full p-4 shadow-xl border border-slate-200 dark:border-gray-800 relative text-slate-800 dark:text-slate-200">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-gray-800">
-                    <h3 class="text-xs font-semibold text-slate-900 dark:text-white">Bukti Pembayaran / Transfer</h3>
-                    <button
-                        type="button"
-                        wire:click="closeProofModal"
-                        class="text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 p-1 rounded-md"
-                    >
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="mt-3 flex justify-center">
+    <div
+        x-data="{ show: @entangle('showProofModal').live }"
+        x-show="show"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4"
+        style="display: none;"
+        @keydown.escape.window="show = false; $wire.closeProofModal()"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-xs transition-opacity"
+            @click="show = false; $wire.closeProofModal()"
+        ></div>
+
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+            class="bg-white dark:bg-gray-900 rounded-lg max-w-xl w-full p-4 shadow-xl border border-slate-200 dark:border-gray-800 relative text-slate-800 dark:text-slate-200 z-10"
+        >
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-gray-800">
+                <h3 class="text-xs font-semibold text-slate-900 dark:text-white">Bukti Pembayaran / Transfer</h3>
+                <button
+                    type="button"
+                    @click="show = false; $wire.closeProofModal()"
+                    class="text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 p-1 rounded-md cursor-pointer"
+                >
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="mt-3 flex justify-center">
+                @if($proofUrl)
                     <img src="{{ $proofUrl }}" alt="Bukti Transfer" class="max-h-[70vh] rounded-md object-contain border border-slate-200 dark:border-gray-700 shadow-inner">
-                </div>
+                @endif
             </div>
         </div>
-    @endif
+    </div>
 </div>

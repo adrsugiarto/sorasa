@@ -13,6 +13,7 @@ use App\Models\Recipe;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -64,8 +65,28 @@ class PhaseThreeMasterDataTest extends TestCase
         ]);
 
         $newProduct = Product::where('kode_produk', 'PRD-TEST-99')->first();
+        $this->assertNull($newProduct->foto_produk);
 
-        // 4. Toggle active status
+        // 4. Update with photo and remove photo
+        $fakeImage = UploadedFile::fake()->image('food.jpg');
+        Livewire::test(ProductManager::class)
+            ->call('openEditModal', $newProduct->id)
+            ->set('foto', $fakeImage)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertNotNull($newProduct->fresh()->foto_produk);
+
+        // Test removeFoto
+        Livewire::test(ProductManager::class)
+            ->call('openEditModal', $newProduct->id)
+            ->call('removeFoto')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertNull($newProduct->fresh()->foto_produk);
+
+        // 5. Toggle active status
         $initialActive = $newProduct->is_active;
         Livewire::test(ProductManager::class)
             ->call('toggleActive', $newProduct->id);

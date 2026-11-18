@@ -124,26 +124,51 @@
     </div>
 
     <!-- Modal Form Tambah / Edit Resep -->
-    @if($showModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
-            <div class="fixed inset-0 bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs transition-opacity" wire:click="closeModal"></div>
+    <div
+        x-data="{ show: @entangle('showModal').live }"
+        x-show="show"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center"
+        style="display: none;"
+        @keydown.escape.window="show = false; $wire.closeModal()"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs transition-opacity"
+            @click="show = false; $wire.closeModal()"
+        ></div>
 
-            <div class="relative w-full max-w-3xl bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10 text-slate-800 dark:text-slate-200">
-                <div class="px-5 py-3.5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
-                            {{ $isEditing ? 'Edit Resep Standar' : 'Buat Resep Standar Baru' }}
-                        </h3>
-                        <p class="text-xs text-slate-500 dark:text-gray-400">Kalkulasi modal bahan baku per batch dan per porsi</p>
-                    </div>
-                    <button type="button" wire:click="closeModal" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+            class="relative w-full max-w-3xl bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10 text-slate-800 dark:text-slate-200"
+        >
+            <div class="px-5 py-3.5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
+                        {{ $isEditing ? 'Edit Resep Standar' : 'Buat Resep Standar Baru' }}
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-gray-400">Kalkulasi modal bahan baku per batch dan per porsi</p>
                 </div>
+                <button type="button" @click="show = false; $wire.closeModal()" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
-                <form wire:submit="save">
+            <form wire:submit="save">
                     <div class="p-5 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
                         <!-- Top Metadata -->
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
@@ -346,7 +371,7 @@
                     <div class="px-5 py-3 bg-slate-50 dark:bg-gray-800/60 border-t border-slate-100 dark:border-gray-800 flex items-center justify-end gap-2">
                         <button
                             type="button"
-                            wire:click="closeModal"
+                            @click="show = false; $wire.closeModal()"
                             class="px-3 py-1.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-750 text-slate-700 dark:text-gray-300 text-xs font-medium rounded-md shadow-xs cursor-pointer"
                         >
                             Batal
@@ -363,5 +388,5 @@
                 </form>
             </div>
         </div>
-    @endif
+    </div>
 </div>

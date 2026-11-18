@@ -163,6 +163,15 @@ class ProductManager extends Component
     }
 
     /**
+     * Remove existing or selected photo.
+     */
+    public function removeFoto(): void
+    {
+        $this->foto = null;
+        $this->existingFoto = null;
+    }
+
+    /**
      * Save product (create or update).
      */
     public function save(): void
@@ -175,6 +184,12 @@ class ProductManager extends Component
                 Storage::disk('public')->delete($this->existingFoto);
             }
             $fotoPath = $this->foto->store('products', 'public');
+        } elseif ($this->existingFoto === null && $this->productId) {
+            $currentProduct = Product::find($this->productId);
+            if ($currentProduct?->foto_produk && Storage::disk('public')->exists($currentProduct->foto_produk)) {
+                Storage::disk('public')->delete($currentProduct->foto_produk);
+            }
+            $fotoPath = null;
         }
 
         Product::query()->updateOrCreate(

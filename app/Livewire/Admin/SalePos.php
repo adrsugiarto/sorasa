@@ -163,6 +163,7 @@ class SalePos extends Component
                 'product_id' => $product->id,
                 'nama_produk' => $product->nama_produk,
                 'harga_jual' => (float) $product->harga_jual,
+                'foto_produk' => $product->foto_produk,
                 'qty' => 1,
                 'subtotal' => (float) $product->harga_jual,
             ];

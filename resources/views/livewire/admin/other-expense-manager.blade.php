@@ -246,24 +246,49 @@
     </div>
 
     <!-- Modal Form Tambah / Edit Pengeluaran -->
-    @if($showModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
-            <div class="fixed inset-0 bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs transition-opacity" wire:click="closeModal"></div>
+    <div
+        x-data="{ show: @entangle('showModal').live }"
+        x-show="show"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center"
+        style="display: none;"
+        @keydown.escape.window="show = false; $wire.closeModal()"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs transition-opacity"
+            @click="show = false; $wire.closeModal()"
+        ></div>
 
-            <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10 text-slate-800 dark:text-slate-200">
-                <div class="px-5 py-3.5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
-                            {{ $isEditing ? 'Edit Pengeluaran Operasional' : 'Catat Pengeluaran Operasional' }}
-                        </h3>
-                        <p class="text-xs text-slate-500 dark:text-gray-400">Kemasan, gas, utilitas, atau tenaga kerja non-bahan</p>
-                    </div>
-                    <button type="button" wire:click="closeModal" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+            class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10 text-slate-800 dark:text-slate-200"
+        >
+            <div class="px-5 py-3.5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
+                        {{ $isEditing ? 'Edit Pengeluaran Operasional' : 'Catat Pengeluaran Operasional' }}
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-gray-400">Kemasan, gas, utilitas, atau tenaga kerja non-bahan</p>
                 </div>
+                <button type="button" @click="show = false; $wire.closeModal()" class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
                 <form wire:submit="save">
                     <div class="p-5 space-y-3.5 max-h-[75vh] overflow-y-auto text-xs">
@@ -404,7 +429,7 @@
                     <div class="px-5 py-3 bg-slate-50 dark:bg-gray-800/60 border-t border-slate-100 dark:border-gray-800 flex items-center justify-end gap-2">
                         <button
                             type="button"
-                            wire:click="closeModal"
+                            @click="show = false; $wire.closeModal()"
                             class="px-3 py-1.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-750 text-slate-700 dark:text-gray-300 text-xs font-medium rounded-md shadow-xs cursor-pointer"
                         >
                             Batal
@@ -414,38 +439,65 @@
                             wire:loading.attr="disabled"
                             class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md shadow-xs disabled:opacity-50 cursor-pointer"
                         >
-                            <span wire:loading.remove>{{ $isEditing ? 'Simpan Perubahan' : 'Catat Pengeluaran' }}</span>
-                            <span wire:loading>Menyimpan...</span>
+                            <span wire:loading.remove wire:target="save">{{ $isEditing ? 'Simpan Perubahan' : 'Catat Pengeluaran' }}</span>
+                            <span wire:loading wire:target="save">Menyimpan...</span>
                         </button>
                     </div>
                 </form>
             </div>
         </div>
-    @endif
 
     <!-- Receipt Image Lightbox Modal -->
-    @if($showReceiptModal && $receiptUrl)
-        <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
-            <div class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-xs transition-opacity" wire:click="closeReceiptModal"></div>
+    <div
+        x-data="{ show: @entangle('showReceiptModal').live }"
+        x-show="show"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center"
+        style="display: none;"
+        @keydown.escape.window="show = false; $wire.closeReceiptModal()"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-xs transition-opacity"
+            @click="show = false; $wire.closeReceiptModal()"
+        ></div>
 
-            <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-2xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10 text-slate-800 dark:text-slate-200">
-                <div class="px-5 py-3.5 bg-slate-900 dark:bg-gray-950 text-white flex items-center justify-between border-b border-slate-800">
-                    <h4 class="text-xs font-semibold">{{ $receiptTitle }}</h4>
-                    <button type="button" wire:click="closeReceiptModal" class="p-1 text-slate-400 hover:text-white cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="p-4 bg-slate-100 dark:bg-gray-950 flex items-center justify-center max-h-[75vh] overflow-auto">
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+            class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-2xl border border-slate-200 dark:border-gray-800 overflow-hidden transform transition-all z-10 text-slate-800 dark:text-slate-200"
+        >
+            <div class="px-5 py-3.5 bg-slate-900 dark:bg-gray-950 text-white flex items-center justify-between border-b border-slate-800">
+                <h4 class="text-xs font-semibold">{{ $receiptTitle }}</h4>
+                <button type="button" @click="show = false; $wire.closeReceiptModal()" class="p-1 text-slate-400 hover:text-white cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-4 bg-slate-100 dark:bg-gray-950 flex items-center justify-center max-h-[75vh] overflow-auto">
+                @if($receiptUrl)
                     <img src="{{ $receiptUrl }}" alt="Foto Nota" class="max-h-[65vh] object-contain rounded-md shadow-sm">
-                </div>
-                <div class="px-5 py-3 bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-800 text-right">
+                @endif
+            </div>
+            <div class="px-5 py-3 bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-800 text-right">
+                @if($receiptUrl)
                     <a href="{{ $receiptUrl }}" target="_blank" class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">
                         Buka Gambar di Tab Baru ↗
                     </a>
-                </div>
+                @endif
             </div>
         </div>
-    @endif
+    </div>
 </div>
