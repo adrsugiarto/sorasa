@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap') layer(base);
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap') layer(base);
 @import 'tailwindcss';
 
 
@@ -13,7 +13,8 @@
 
 @theme {
   --font-*: initial;
-  --font-outfit: Outfit, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;
@@ -201,32 +202,32 @@
     cursor: pointer;
   }
   body {
-    @apply relative font-normal font-outfit z-1 bg-gray-50 dark:bg-gray-900;
+    @apply relative font-normal font-sans z-1 bg-slate-50 dark:bg-gray-900;
   }
 }
 
 @utility menu-item {
-  @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-theme-sm;
+  @apply relative flex items-center w-full gap-2.5 px-2.5 py-1.5 font-medium rounded-md text-[13px] leading-5 transition-colors;
 }
 
 @utility menu-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-blue-50/80 text-blue-700 font-semibold dark:bg-blue-900/30 dark:text-blue-300;
 }
 
 @utility menu-item-inactive {
-  @apply text-gray-700 hover:bg-gray-100 group-hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
+  @apply text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white;
 }
 
 @utility menu-item-icon {
-  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400;
+  @apply text-slate-400 group-hover:text-slate-600 dark:text-gray-500;
 }
 
 @utility menu-item-icon-active {
-  @apply text-brand-500 dark:text-brand-400;
+  @apply text-blue-600 dark:text-blue-400;
 }
 
 @utility menu-item-icon-inactive {
-  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300;
+  @apply text-slate-400 group-hover:text-slate-600 dark:text-gray-500 dark:group-hover:text-gray-300;
 }
 
 /* @utility menu-item-arrow {
@@ -1161,23 +1162,23 @@ pre[class*='language-'] {
 }
 
 @utility menu-item {
-  @apply relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium;
+  @apply relative flex items-center w-full gap-2.5 px-2.5 py-1.5 font-medium rounded-md text-[13px] leading-5 transition-colors;
 }
 
 @utility menu-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-blue-50/80 text-blue-700 font-semibold dark:bg-blue-900/30 dark:text-blue-300;
 }
 
 @utility menu-item-inactive {
-  @apply text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
+  @apply text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white;
 }
 
 @utility menu-item-icon-active {
-  @apply text-brand-500 dark:text-brand-400;
+  @apply text-blue-600 dark:text-blue-400;
 }
 
 @utility menu-item-icon-inactive {
-  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300;
+  @apply text-slate-400 group-hover:text-slate-600 dark:text-gray-500 dark:group-hover:text-gray-300;
 }
 
 @utility menu-item-arrow {

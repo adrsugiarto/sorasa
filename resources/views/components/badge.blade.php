@@ -5,6 +5,7 @@
 
 @php
 $classes = match($variant) {
+    'blue', 'primary' => 'bg-blue-50 text-blue-700 border-blue-200/80',
     'emerald', 'success' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
     'amber', 'warning' => 'bg-amber-50 text-amber-700 border-amber-200/80',
     'rose', 'danger' => 'bg-rose-50 text-rose-700 border-rose-200/80',
@@ -14,6 +15,7 @@ $classes = match($variant) {
 };
 
 $dotClasses = match($variant) {
+    'blue', 'primary' => 'bg-blue-600',
     'emerald', 'success' => 'bg-emerald-500',
     'amber', 'warning' => 'bg-amber-500',
     'rose', 'danger' => 'bg-rose-500',
@@ -23,7 +25,7 @@ $dotClasses = match($variant) {
 };
 @endphp
 
-<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ' . $classes]) }}>
+<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium border ' . $classes]) }}>
     @if($dot)
         <span class="w-1.5 h-1.5 rounded-full {{ $dotClasses }}"></span>
     @endif

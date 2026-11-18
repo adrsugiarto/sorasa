@@ -8,10 +8,10 @@
 
     <title>{{ $title ?? 'SORASA — Sistem Operasional & POS Open PO Makanan' }}</title>
 
-    <!-- Google Font: Outfit (TailAdmin standard) -->
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -129,7 +129,7 @@
     </script>
 </head>
 
-<body class="h-full font-sans antialiased text-gray-800 bg-gray-50 dark:bg-gray-900 dark:text-gray-200">
+<body class="h-full font-sans antialiased text-slate-800 bg-slate-50 dark:bg-gray-900 dark:text-slate-200">
     <div
         class="min-h-screen xl:flex sidebar-expanded"
         x-data
@@ -144,7 +144,7 @@
 
             <!-- Global Toast / Alerts -->
             @if(session('success'))
-                <div x-data="{ show: true }" x-show="show" class="mx-4 sm:mx-6 lg:mx-8 mt-4 bg-emerald-50 border border-emerald-200 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300 text-xs font-semibold px-4 py-3 rounded-2xl flex items-center justify-between shadow-2xs">
+                <div x-data="{ show: true }" x-show="show" class="mx-4 sm:mx-6 lg:mx-8 mt-4 bg-emerald-50 border border-emerald-200 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300 text-xs font-semibold px-4 py-3 rounded-md flex items-center justify-between shadow-xs">
                     <div class="flex items-center gap-2">
                         <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
@@ -158,7 +158,7 @@
             @endif
 
             @if(session('error'))
-                <div x-data="{ show: true }" x-show="show" class="mx-4 sm:mx-6 lg:mx-8 mt-4 bg-rose-50 border border-rose-200 text-rose-800 dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300 text-xs font-semibold px-4 py-3 rounded-2xl flex items-center justify-between shadow-2xs">
+                <div x-data="{ show: true }" x-show="show" class="mx-4 sm:mx-6 lg:mx-8 mt-4 bg-rose-50 border border-rose-200 text-rose-800 dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300 text-xs font-semibold px-4 py-3 rounded-md flex items-center justify-between shadow-xs">
                     <div class="flex items-center gap-2">
                         <svg class="w-4 h-4 text-rose-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>

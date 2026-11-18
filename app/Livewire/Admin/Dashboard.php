@@ -154,10 +154,10 @@ class Dashboard extends Component
                 $surplus,
             ],
             'colors' => [
-                '#d97706', // amber-600
-                '#e11d48', // rose-600
-                '#8b5cf6', // purple-500
-                $surplus >= 0 ? '#059669' : '#dc2626', // emerald-600 or red-600
+                '#2563eb', // blue-600 for omzet
+                '#e11d48', // rose-600 for pembelian bahan
+                '#64748b', // slate-500 for biaya operasional
+                $surplus >= 0 ? '#10b981' : '#dc2626', // emerald-500 or red-600 for surplus
             ],
         ];
 

@@ -2,25 +2,25 @@
     $activePo = \App\Models\OpenPo::where('status', 'open')->latest('id')->first();
 @endphp
 <div class="mb-4">
-    <div class="mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/20 px-3.5 py-4 text-center dark:bg-amber-500/5">
-        <div class="w-8 h-8 rounded-lg bg-amber-600 text-white font-bold flex items-center justify-center text-xs mx-auto mb-2 shadow-2xs">
+    <div class="mx-auto rounded-lg bg-slate-50 border border-slate-200 px-3 py-3 text-center dark:bg-gray-800/60 dark:border-gray-800">
+        <div class="w-7 h-7 rounded-md bg-blue-600 text-white font-bold flex items-center justify-center text-xs mx-auto mb-1.5 shadow-xs">
             S
         </div>
-        <h4 class="text-xs font-bold text-gray-900 dark:text-white">
-            SORASA Kitchen & Pastry
+        <h4 class="text-xs font-semibold text-slate-900 dark:text-white">
+            SORASA
         </h4>
         @if($activePo)
-            <div class="mt-2 pt-2 border-t border-amber-500/20">
-                <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-amber-600 text-white">
+            <div class="mt-2 pt-2 border-t border-slate-200 dark:border-gray-700">
+                <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/40 dark:text-blue-300">
                     PO BUKA: {{ $activePo->kode_po }}
                 </span>
-                <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-1 truncate font-medium">
+                <p class="text-[10px] text-slate-500 dark:text-gray-400 mt-1 truncate font-medium">
                     Kirim: {{ $activePo->tanggal_pengiriman->format('d M Y') }}
                 </p>
             </div>
         @else
-            <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
-                Manajemen Operasional PO
+            <p class="text-[10px] text-slate-500 dark:text-gray-400 mt-0.5">
+                Kitchen & Pastry POS
             </p>
         @endif
     </div>
