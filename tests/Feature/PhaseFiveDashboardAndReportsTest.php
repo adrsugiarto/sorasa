@@ -209,6 +209,8 @@ class PhaseFiveDashboardAndReportsTest extends TestCase
             ->assertViewHas('surplus', 125000.0)
             ->assertViewHas('totalPaid', 150000.0)
             ->assertViewHas('totalPiutang', 100000.0)
+            ->assertSet('chartFinancial.categories', ['Penjualan (Omzet)', 'Pembelian Bahan', 'Biaya Operasional', 'Surplus Usaha'])
+            ->assertDispatched('charts-updated')
             ->assertSee('PO Batch #2 Aktif'); // Active open PO banner
     }
 

@@ -470,8 +470,9 @@
                 this.chart = new window.ApexCharts(this.$refs.chartContainer, options);
                 this.chart.render();
 
-                this.$watch('$wire.chartFinancial', (newData) => {
-                    if (this.chart && newData) {
+                window.addEventListener('charts-updated', (event) => {
+                    if (this.chart && event.detail && event.detail.financial) {
+                        const newData = event.detail.financial;
                         this.chart.updateOptions({
                             xaxis: { categories: newData.categories },
                             colors: newData.colors
@@ -576,8 +577,9 @@
                 this.chart = new window.ApexCharts(this.$refs.trendContainer, options);
                 this.chart.render();
 
-                this.$watch('$wire.chartTrend', (newData) => {
-                    if (this.chart && newData) {
+                window.addEventListener('charts-updated', (event) => {
+                    if (this.chart && event.detail && event.detail.trend) {
+                        const newData = event.detail.trend;
                         this.chart.updateOptions({
                             xaxis: { categories: newData.categories }
                         });

@@ -13,6 +13,7 @@ use App\Livewire\Admin\Reports;
 use App\Livewire\Admin\SaleList;
 use App\Livewire\Admin\SalePos;
 use App\Livewire\Admin\Settings;
+use App\Livewire\Admin\UserManager;
 use App\Livewire\Auth\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -54,5 +55,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/recipes', RecipeManager::class)->name('recipes');
     Route::get('/customers', CustomerManager::class)->name('customers');
     Route::get('/reports', Reports::class)->name('reports');
+    Route::get('/users', UserManager::class)->name('users');
     Route::get('/settings', Settings::class)->name('settings');
 });

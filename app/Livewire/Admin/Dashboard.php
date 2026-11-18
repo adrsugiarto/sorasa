@@ -26,6 +26,16 @@ class Dashboard extends Component
 
     public ?string $endDate = null;
 
+    /**
+     * @var array<string, mixed>
+     */
+    public array $chartFinancial = [];
+
+    /**
+     * @var array<string, mixed>
+     */
+    public array $chartTrend = [];
+
     public function updatedPeriod(): void
     {
         if ($this->period === 'this_month') {
@@ -185,6 +195,11 @@ class Dashboard extends Component
             'seriesOmzet' => $trendSeriesOmzet,
             'seriesCount' => $trendSeriesCount,
         ];
+
+        $this->chartFinancial = $chartFinancial;
+        $this->chartTrend = $chartTrend;
+
+        $this->dispatch('charts-updated', financial: $this->chartFinancial, trend: $this->chartTrend);
 
         return view('livewire.admin.dashboard', [
             'openPos' => $openPos,
