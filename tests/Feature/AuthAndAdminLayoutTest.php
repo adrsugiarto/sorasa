@@ -106,6 +106,7 @@ class AuthAndAdminLayoutTest extends TestCase
             'admin.recipes',
             'admin.customers',
             'admin.reports',
+            'admin.users',
             'admin.settings',
         ];
 
