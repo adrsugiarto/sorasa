@@ -92,12 +92,26 @@
             <div>
                 <div class="flex items-center gap-2">
                     <div class="w-7 h-7 rounded-md bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
-                        S
+                        {{ strtoupper(substr($storeSettings['store_name'] ?? 'S', 0, 1)) }}
                     </div>
-                    <span class="text-lg font-bold tracking-tight text-slate-900 dark:text-white print:text-slate-900">SORASA</span>
+                    <span class="text-lg font-bold tracking-tight text-slate-900 dark:text-white print:text-slate-900">
+                        {{ $storeSettings['store_name'] ?? 'SORASA Kitchen' }}
+                    </span>
                 </div>
-                <p class="text-xs text-slate-500 dark:text-gray-400 print:text-slate-500 font-medium mt-1">Sistem Manajemen Operasional & POS Open PO Makanan</p>
-                <p class="text-[11px] text-slate-400 dark:text-gray-500 print:text-slate-400">Dapur Kuliner & Pastry — Bandung, Jawa Barat</p>
+                @if(!empty($storeSettings['store_tagline']))
+                    <p class="text-xs text-slate-500 dark:text-gray-400 print:text-slate-500 font-medium mt-1">
+                        {{ $storeSettings['store_tagline'] }}
+                    </p>
+                @endif
+                <p class="text-[11px] text-slate-400 dark:text-gray-500 print:text-slate-400 mt-0.5">
+                    {{ $storeSettings['store_address'] ?? 'Dapur Kuliner & Pastry' }}
+                    @if(!empty($storeSettings['store_phone']))
+                        • WhatsApp: {{ $storeSettings['store_phone'] }}
+                    @endif
+                    @if(!empty($storeSettings['store_email']))
+                        • {{ $storeSettings['store_email'] }}
+                    @endif
+                </p>
             </div>
             <div class="text-left sm:text-right">
                 <span class="inline-block px-2.5 py-0.5 bg-slate-100 dark:bg-gray-800 print:bg-slate-100 text-slate-800 dark:text-gray-200 print:text-slate-800 rounded-md text-[11px] font-semibold uppercase tracking-wider border border-slate-200 dark:border-gray-700 print:border-slate-200">
@@ -270,14 +284,14 @@
             <div>
                 <p class="font-medium text-slate-500 dark:text-gray-400">Dibuat & Diverifikasi Oleh,</p>
                 <div class="h-14"></div>
-                <p class="font-semibold text-slate-900 dark:text-white print:text-slate-900 underline">( Admin / Kasir SORASA )</p>
+                <p class="font-semibold text-slate-900 dark:text-white print:text-slate-900 underline">( Admin / Kasir {{ $storeSettings['store_name'] ?? 'SORASA' }} )</p>
                 <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-0.5">Operasional Dapur</p>
             </div>
             <div>
                 <p class="font-medium text-slate-500 dark:text-gray-400">Mengetahui & Menyetujui,</p>
                 <div class="h-14"></div>
                 <p class="font-semibold text-slate-900 dark:text-white print:text-slate-900 underline">( Pemilik Usaha / Owner )</p>
-                <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-0.5">Owner SORASA Kitchen</p>
+                <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-0.5">Owner {{ $storeSettings['store_name'] ?? 'SORASA Kitchen' }}</p>
             </div>
         </div>
     </div>

@@ -12,6 +12,7 @@ use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -252,5 +253,21 @@ class PhaseFiveDashboardAndReportsTest extends TestCase
             ->test(Reports::class)
             ->call('exportCsv')
             ->assertFileDownloaded();
+    }
+
+    public function test_reports_displays_dynamic_business_identity(): void
+    {
+        Setting::set('store_name', 'Dapoer Nusantara Sejahtera');
+        Setting::set('store_tagline', 'Kelezatan Rasa Tradisional');
+        Setting::set('store_address', 'Kota Salatiga, Jawa Tengah');
+        Setting::set('store_phone', '081999888777');
+
+        Livewire::actingAs($this->user)
+            ->test(Reports::class)
+            ->assertStatus(200)
+            ->assertSee('Dapoer Nusantara Sejahtera')
+            ->assertSee('Kelezatan Rasa Tradisional')
+            ->assertSee('Kota Salatiga, Jawa Tengah')
+            ->assertSee('081999888777');
     }
 }

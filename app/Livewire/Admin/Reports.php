@@ -7,6 +7,7 @@ use App\Models\OtherExpense;
 use App\Models\Purchase;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use App\Models\Setting;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -55,14 +56,16 @@ class Reports extends Component
     public function exportCsv(): StreamedResponse
     {
         $data = $this->calculateFinancials();
-        $filename = 'Laporan_Laba_Rugi_SORASA_'.date('Ymd_His').'.csv';
+        $storeName = Setting::get('store_name', 'SORASA Kitchen') ?: 'SORASA Kitchen';
+        $safeName = preg_replace('/[^A-Za-z0-9_]/', '_', $storeName);
+        $filename = 'Laporan_Laba_Rugi_'.$safeName.'_'.date('Ymd_His').'.csv';
 
-        return response()->streamDownload(function () use ($data) {
+        return response()->streamDownload(function () use ($data, $storeName) {
             $handle = fopen('php://output', 'w');
             // Add UTF-8 BOM for Microsoft Excel
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            fputcsv($handle, ['LAPORAN LABA RUGI SEDERHANA — SORASA KITCHEN & PASTRY']);
+            fputcsv($handle, ['LAPORAN LABA RUGI SEDERHANA — '.strtoupper($storeName)]);
             fputcsv($handle, ['Periode / Batch', $data['filterLabel']]);
             fputcsv($handle, ['Tanggal Cetak', Carbon::now()->format('d/m/Y H:i').' WIB']);
             fputcsv($handle, []);
@@ -233,9 +236,11 @@ class Reports extends Component
     {
         $openPos = OpenPo::query()->latest('id')->get(['id', 'nama_po', 'kode_po', 'status']);
         $financials = $this->calculateFinancials();
+        $storeSettings = Setting::all()->pluck('value', 'key')->toArray();
 
         return view('livewire.admin.reports', array_merge([
             'openPos' => $openPos,
+            'storeSettings' => $storeSettings,
         ], $financials));
     }
 }
