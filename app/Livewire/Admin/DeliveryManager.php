@@ -110,9 +110,20 @@ class DeliveryManager extends Component
      */
     public function updateStatus(int $id, string $status): void
     {
-        $deliv = Delivery::query()->findOrFail($id);
+        $deliv = Delivery::query()->with('sale')->findOrFail($id);
         $deliv->status_pengantaran = $status;
         $deliv->save();
+
+        // Auto-sync with Sale
+        if ($deliv->sale) {
+            if ($status === 'terkirim' && $deliv->sale->status_order !== 'selesai') {
+                $deliv->sale->status_order = 'selesai';
+                $deliv->sale->save();
+            } elseif ($status === 'dalam_pengiriman' && in_array($deliv->sale->status_order, ['menunggu_konfirmasi', 'diproses'])) {
+                $deliv->sale->status_order = 'siap_kirim';
+                $deliv->sale->save();
+            }
+        }
 
         session()->flash('success', "Status pengantaran untuk {$deliv->nama_penerima} berhasil diubah menjadi ".strtoupper(str_replace('_', ' ', $status)).'.');
     }
@@ -159,7 +170,7 @@ class DeliveryManager extends Component
             'status_pengantaran' => ['required', 'in:menunggu,dijadwalkan,dalam_pengiriman,terkirim'],
         ]);
 
-        $deliv = Delivery::query()->findOrFail($this->deliveryId);
+        $deliv = Delivery::query()->with('sale')->findOrFail($this->deliveryId);
         $deliv->update([
             'nama_penerima' => trim($this->nama_penerima),
             'no_telepon_penerima' => trim($this->no_telepon_penerima),
@@ -171,6 +182,17 @@ class DeliveryManager extends Component
             'status_pengantaran' => $this->status_pengantaran,
             'catatan_kurir' => $this->catatan_kurir,
         ]);
+
+        // Auto-sync with Sale
+        if ($deliv->sale) {
+            if ($this->status_pengantaran === 'terkirim' && $deliv->sale->status_order !== 'selesai') {
+                $deliv->sale->status_order = 'selesai';
+                $deliv->sale->save();
+            } elseif ($this->status_pengantaran === 'dalam_pengiriman' && in_array($deliv->sale->status_order, ['menunggu_konfirmasi', 'diproses'])) {
+                $deliv->sale->status_order = 'siap_kirim';
+                $deliv->sale->save();
+            }
+        }
 
         session()->flash('success', 'Data pengantaran berhasil diperbarui.');
         $this->closeEditModal();

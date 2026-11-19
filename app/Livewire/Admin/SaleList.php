@@ -91,11 +91,47 @@ class SaleList extends Component
      */
     public function updateOrderStatus(int $saleId, string $status): void
     {
-        $sale = Sale::query()->findOrFail($saleId);
+        $sale = Sale::query()->with('delivery')->findOrFail($saleId);
         $sale->status_order = $status;
         $sale->save();
 
+        if ($sale->delivery) {
+            if ($status === 'siap_kirim' && in_array($sale->delivery->status_pengantaran, ['menunggu'])) {
+                $sale->delivery->status_pengantaran = 'dijadwalkan';
+                $sale->delivery->save();
+            } elseif ($status === 'selesai' && $sale->delivery->status_pengantaran !== 'terkirim') {
+                $sale->delivery->status_pengantaran = 'terkirim';
+                $sale->delivery->save();
+            } elseif ($status === 'dibatalkan') {
+                $sale->delivery->status_pengantaran = 'menunggu';
+                $sale->delivery->save();
+            }
+        }
+
         session()->flash('success', "Status order {$sale->nomor_order} berhasil diubah menjadi ".strtoupper(str_replace('_', ' ', $status)).'.');
+    }
+
+    /**
+     * Update delivery status directly from sale list.
+     */
+    public function updateDeliveryStatus(int $saleId, string $deliveryStatus): void
+    {
+        $sale = Sale::query()->with('delivery')->findOrFail($saleId);
+        if ($sale->delivery) {
+            $sale->delivery->status_pengantaran = $deliveryStatus;
+            $sale->delivery->save();
+
+            // Auto-sync sale status
+            if ($deliveryStatus === 'terkirim' && $sale->status_order !== 'selesai') {
+                $sale->status_order = 'selesai';
+                $sale->save();
+            } elseif ($deliveryStatus === 'dalam_pengiriman' && in_array($sale->status_order, ['menunggu_konfirmasi', 'diproses'])) {
+                $sale->status_order = 'siap_kirim';
+                $sale->save();
+            }
+
+            session()->flash('success', "Status pengantaran untuk order {$sale->nomor_order} diperbarui ke ".strtoupper(str_replace('_', ' ', $deliveryStatus)).'.');
+        }
     }
 
     /**
@@ -222,7 +258,7 @@ class SaleList extends Component
     public function render(): View
     {
         $query = Sale::query()
-            ->with(['customer', 'openPo', 'items', 'payments'])
+            ->with(['customer', 'openPo', 'items', 'payments', 'delivery'])
             ->when($this->search, function ($q) {
                 $q->where(function ($sub) {
                     $sub->where('nomor_order', 'like', '%'.$this->search.'%')

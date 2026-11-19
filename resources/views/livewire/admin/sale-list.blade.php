@@ -14,7 +14,7 @@
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                <span>+ Order Baru (Kasir POS)</span>
+                <span>Order Baru (Kasir POS)</span>
             </a>
         </div>
 
@@ -86,7 +86,7 @@
                         <th class="px-4 py-3.5">Item Pesanan</th>
                         <th class="px-4 py-3.5 text-right">Total Tagihan</th>
                         <th class="px-4 py-3.5">Status Bayar</th>
-                        <th class="px-4 py-3.5">Status Order</th>
+                        <th class="px-4 py-3.5">Status Order & Kurir</th>
                         <th class="px-4 py-3.5 text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -142,27 +142,73 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3.5 whitespace-nowrap">
-                                <select
-                                    wire:change="updateOrderStatus({{ $sale->id }}, $event.target.value)"
-                                    class="text-xs sm:text-sm font-medium py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-700 dark:text-gray-300 cursor-pointer"
-                                >
-                                    <option value="menunggu_konfirmasi" @selected($sale->status_order === 'menunggu_konfirmasi')>Menunggu Konfirmasi</option>
-                                    <option value="diproses" @selected($sale->status_order === 'diproses')>Diproses</option>
-                                    <option value="siap_kirim" @selected($sale->status_order === 'siap_kirim')>Siap Kirim</option>
-                                    <option value="selesai" @selected($sale->status_order === 'selesai')>Selesai</option>
-                                    <option value="dibatalkan" @selected($sale->status_order === 'dibatalkan')>Dibatalkan</option>
-                                </select>
+                                <div class="space-y-1.5 min-w-[210px]">
+                                    <div>
+                                        <select
+                                            wire:change="updateOrderStatus({{ $sale->id }}, $event.target.value)"
+                                            class="text-xs sm:text-sm font-semibold py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-800 dark:text-gray-200 cursor-pointer w-full shadow-2xs"
+                                        >
+                                            <option value="menunggu_konfirmasi" @selected($sale->status_order === 'menunggu_konfirmasi')>Menunggu Konfirmasi</option>
+                                            <option value="diproses" @selected($sale->status_order === 'diproses')>Diproses</option>
+                                            <option value="siap_kirim" @selected($sale->status_order === 'siap_kirim')>Siap Kirim</option>
+                                            <option value="selesai" @selected($sale->status_order === 'selesai')>Selesai</option>
+                                            <option value="dibatalkan" @selected($sale->status_order === 'dibatalkan')>Dibatalkan</option>
+                                        </select>
+                                    </div>
+
+                                    @if($sale->delivery)
+                                        <div class="flex items-center gap-1.5" x-data="{ copied: false }">
+                                            <select
+                                                wire:change="updateDeliveryStatus({{ $sale->id }}, $event.target.value)"
+                                                @class([
+                                                    'text-xs font-semibold rounded-lg px-2.5 py-1.5 border cursor-pointer transition-colors flex-1 shadow-2xs',
+                                                    'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' => $sale->delivery->status_pengantaran === 'terkirim',
+                                                    'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800' => $sale->delivery->status_pengantaran === 'dalam_pengiriman',
+                                                    'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800' => $sale->delivery->status_pengantaran === 'dijadwalkan',
+                                                    'bg-slate-50 text-slate-700 border-slate-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700' => $sale->delivery->status_pengantaran === 'menunggu',
+                                                ])
+                                                title="Status Pengantaran Kurir"
+                                            >
+                                                <option value="menunggu" @selected($sale->delivery->status_pengantaran === 'menunggu')>Kurir: Menunggu</option>
+                                                <option value="dijadwalkan" @selected($sale->delivery->status_pengantaran === 'dijadwalkan')>Kurir: Dijadwalkan</option>
+                                                <option value="dalam_pengiriman" @selected($sale->delivery->status_pengantaran === 'dalam_pengiriman')>Kurir: Dalam Pengiriman</option>
+                                                <option value="terkirim" @selected($sale->delivery->status_pengantaran === 'terkirim')>Kurir: Terkirim</option>
+                                            </select>
+
+                                            <!-- Tombol Info Kurir di bawah status order -->
+                                            <button
+                                                type="button"
+                                                x-on:click="navigator.clipboard.writeText(`{{ addslashes($sale->delivery->format_kurir) }}`); copied = true; setTimeout(() => copied = false, 2500)"
+                                                class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-2xs border shrink-0"
+                                                :class="copied ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                                                title="Salin rincian pesanan untuk WhatsApp kurir"
+                                            >
+                                                <template x-if="!copied">
+                                                    <svg class="w-3.5 h-3.5 text-slate-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                    </svg>
+                                                </template>
+                                                <template x-if="copied">
+                                                    <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </template>
+                                                <span x-text="copied ? 'Tersalin' : 'Info Kurir'"></span>
+                                            </button>
+                                        </div>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-4 py-3.5 text-right whitespace-nowrap">
-                                <div class="inline-flex items-center gap-2 justify-end">
+                                <div class="flex flex-col gap-1.5 items-end justify-center">
                                     @if($sale->remaining_balance > 0)
                                         <button
                                             type="button"
                                             wire:click="openPaymentModal({{ $sale->id }})"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer"
+                                            class="w-full max-w-[115px] inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-2xs transition-colors cursor-pointer"
                                             title="Catat Pembayaran Masuk"
                                         >
-                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                             </svg>
                                             <span>Catat Bayar</span>
@@ -172,10 +218,10 @@
                                     <button
                                         type="button"
                                         wire:click="viewReceipt({{ $sale->id }})"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-gray-750 text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-gray-700 font-semibold text-xs transition-colors cursor-pointer"
+                                        class="w-full max-w-[115px] inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-gray-750 text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-gray-700 font-semibold text-xs transition-colors cursor-pointer shadow-2xs"
                                         title="Lihat / Cetak Struk Nota"
                                     >
-                                        <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                                         </svg>
                                         <span>Nota Struk</span>

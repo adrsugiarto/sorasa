@@ -26,3 +26,10 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 tailadmin-laravel-main/
+
+# AI Agent & Guidelines
+AGENTS.md
+CLAUDE.md
+UI_GUIDELINES.md
+.agent/
+.claude/

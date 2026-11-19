@@ -235,7 +235,21 @@
                             <!-- Order -->
                             <td class="px-4 py-3.5 whitespace-nowrap">
                                 <span class="font-mono font-bold text-slate-900 dark:text-white block tabular-nums">{{ $deliv->sale?->nomor_order }}</span>
-                                <span class="text-xs text-slate-400 dark:text-gray-500 font-normal">{{ $deliv->sale?->openPo?->nama_po ?? '-' }}</span>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <span class="text-xs text-slate-400 dark:text-gray-500 font-normal">{{ $deliv->sale?->openPo?->nama_po ?? '-' }}</span>
+                                    @if($deliv->sale)
+                                        <span @class([
+                                            'text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-tight',
+                                            'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300' => $deliv->sale->status_order === 'selesai',
+                                            'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' => $deliv->sale->status_order === 'siap_kirim',
+                                            'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300' => $deliv->sale->status_order === 'diproses',
+                                            'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300' => $deliv->sale->status_order === 'dibatalkan',
+                                            'bg-slate-100 text-slate-600 dark:bg-gray-800 dark:text-gray-300' => $deliv->sale->status_order === 'menunggu_konfirmasi',
+                                        ])>
+                                            {{ str_replace('_', ' ', $deliv->sale->status_order) }}
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
 
                             <!-- Penerima -->

@@ -359,4 +359,61 @@ class PhaseFourTransactionsTest extends TestCase
             ->assertSet('customer_id', null)
             ->assertSet('nama_penerima', '');
     }
+
+    public function test_sale_list_and_delivery_manager_two_way_status_sync(): void
+    {
+        // 1. Create a sale with delivery
+        $sale = Sale::create([
+            'nomor_order' => 'INV-TEST-SYNC-01',
+            'open_po_id' => $this->openPo->id,
+            'customer_id' => $this->customer->id,
+            'tanggal_pemesanan' => Carbon::today(),
+            'subtotal' => 100000,
+            'diskon' => 0,
+            'ongkos_kirim' => 10000,
+            'total_tagihan' => 110000,
+            'status_pembayaran' => 'lunas',
+            'status_order' => 'diproses',
+            'order_source' => 'admin',
+        ]);
+
+        $delivery = $sale->delivery()->create([
+            'tanggal_pengiriman' => Carbon::tomorrow(),
+            'jam_pengiriman' => '10:00',
+            'nama_penerima' => 'Penerima Sync',
+            'no_telepon_penerima' => '08123456789',
+            'alamat_lengkap' => 'Jl. Pengantaran No. 1',
+            'status_pengantaran' => 'menunggu',
+        ]);
+
+        // Test updating sale status to 'siap_kirim' -> delivery becomes 'dijadwalkan'
+        Livewire::actingAs($this->user)
+            ->test(SaleList::class)
+            ->call('updateOrderStatus', $sale->id, 'siap_kirim');
+
+        $this->assertEquals('dijadwalkan', $delivery->fresh()->status_pengantaran);
+
+        // Test updating delivery to 'dalam_pengiriman' via DeliveryManager
+        Livewire::actingAs($this->user)
+            ->test(DeliveryManager::class)
+            ->call('updateStatus', $delivery->id, 'dalam_pengiriman');
+
+        $this->assertEquals('dalam_pengiriman', $delivery->fresh()->status_pengantaran);
+        $this->assertEquals('siap_kirim', $sale->fresh()->status_order);
+
+        // Test updating delivery to 'terkirim' -> sale automatically becomes 'selesai'
+        Livewire::actingAs($this->user)
+            ->test(DeliveryManager::class)
+            ->call('updateStatus', $delivery->id, 'terkirim');
+
+        $this->assertEquals('terkirim', $delivery->fresh()->status_pengantaran);
+        $this->assertEquals('selesai', $sale->fresh()->status_order);
+
+        // Test updating delivery status directly from SaleList
+        Livewire::actingAs($this->user)
+            ->test(SaleList::class)
+            ->call('updateDeliveryStatus', $sale->id, 'dijadwalkan');
+
+        $this->assertEquals('dijadwalkan', $delivery->fresh()->status_pengantaran);
+    }
 }
