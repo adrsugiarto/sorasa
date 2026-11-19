@@ -1,5 +1,11 @@
 <?php
 
+if (isset($_SERVER['HTTP_HOST']) && str_contains($_SERVER['HTTP_HOST'], 'adrianode.my.id')) {
+    $_SERVER['HTTPS'] = 'on';
+    $_SERVER['SERVER_PORT'] = 443;
+    $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+}
+
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
